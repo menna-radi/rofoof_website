@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
+import { CreateOrderModal } from '@/shared/components/modals/CreateOrderModal';
 
 interface OrderTimelineStep {
   label: string;
@@ -45,6 +46,7 @@ export const OrdersPage: React.FC = () => {
   const [expandedRow, setExpandedRow] = useState<string | null>('ORD-8901');
   const [cancelModalOrder, setCancelModalOrder] = useState<ActiveOrder | null>(null);
   const [cancelReason, setCancelReason] = useState('Customer request');
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([
     {
@@ -163,7 +165,10 @@ export const OrdersPage: React.FC = () => {
           <h1 className="text-[22px] font-extrabold text-[#0F1629] tracking-tight">Order Management</h1>
           <p className="text-[13px] text-[#7A8299] mt-0.5">Track, update, and manage all orders in real time</p>
         </div>
-        <button className="h-[38px] px-4 rounded-[12px] bg-gradient-to-r from-[#384E85] to-[#2A3A65] text-white text-[13px] font-bold flex items-center gap-2 shadow-[0px_4px_14px_rgba(56,78,133,0.3)] hover:opacity-95 transition cursor-pointer border-none">
+        <button 
+          onClick={() => setIsCreateOrderOpen(true)}
+          className="h-[38px] px-4 rounded-[12px] bg-gradient-to-r from-[#384E85] to-[#2A3A65] text-white text-[13px] font-bold flex items-center gap-2 shadow-[0px_4px_14px_rgba(56,78,133,0.3)] hover:opacity-95 transition cursor-pointer border-none"
+        >
           <Plus className="w-4 h-4" />
           <span>Create Order</span>
         </button>
@@ -558,6 +563,12 @@ export const OrdersPage: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Create Order Modal (Figma Design 1:17684) */}
+      <CreateOrderModal 
+        isOpen={isCreateOrderOpen} 
+        onClose={() => setIsCreateOrderOpen(false)}
+        onOrderCreated={(newOrder) => setActiveOrders([newOrder, ...activeOrders])}
+      />
     </div>
   );
 };
