@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
+import { AddDriverModal } from '@/shared/components/modals/AddDriverModal';
 
 interface Driver {
   id: string;
@@ -36,6 +37,7 @@ interface Driver {
 export const DriversPage: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'online' | 'busy' | 'offline' | 'suspended'>('all');
   const [search, setSearch] = useState('');
+  const [isAddDriverOpen, setIsAddDriverOpen] = useState(false);
 
   const [drivers, setDrivers] = useState<Driver[]>([
     { id: '1', name: 'Ahmed Khalil', handle: '@ahmed.khalil', initials: 'AK', phone: '+20 100 234 5678', nationalId: '28901234500012', vehicleType: 'Motorcycle', vehicleIcon: '🏍️', licensePlate: 'ABC-1234', status: 'Online', rating: 4.9, totalTrips: 1842, activeOrders: 3, earnings: '184.50 EGP', avatarBg: 'from-[#384E85] to-[#6B8ED4]' },
@@ -82,7 +84,10 @@ export const DriversPage: React.FC = () => {
           <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
             Export Data
           </Button>
-          <button className="h-[38px] px-4 rounded-[12px] bg-gradient-to-r from-[#384E85] to-[#2A3A65] text-white text-[13px] font-bold flex items-center gap-2 shadow-[0px_4px_14px_rgba(56,78,133,0.3)] hover:opacity-95 transition cursor-pointer border-none">
+          <button 
+            onClick={() => setIsAddDriverOpen(true)}
+            className="h-[38px] px-4 rounded-[12px] bg-gradient-to-r from-[#384E85] to-[#2A3A65] text-white text-[13px] font-bold flex items-center gap-2 shadow-[0px_4px_14px_rgba(56,78,133,0.3)] hover:opacity-95 transition cursor-pointer border-none"
+          >
             <UserPlus className="w-4 h-4" />
             <span>Add Driver</span>
           </button>
@@ -234,6 +239,12 @@ export const DriversPage: React.FC = () => {
           </table>
         </div>
       </Card>
+      {/* Add Driver Modal (Figma Design 1:17760) */}
+      <AddDriverModal
+        isOpen={isAddDriverOpen}
+        onClose={() => setIsAddDriverOpen(false)}
+        onDriverAdded={(newDriver) => setDrivers([newDriver, ...drivers])}
+      />
     </div>
   );
 };
