@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
+import { SendNotificationModal } from '@/shared/components/modals/SendNotificationModal';
 
 interface PushNotificationLog {
   id: string;
@@ -32,6 +33,9 @@ interface PushNotificationLog {
 
 export const PushNotificationsPage: React.FC = () => {
   const { t } = useTranslation();
+
+  // Modal State
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
 
   // Form State
   const [title, setTitle] = useState('🔥 Flash Sale: 30% Off Fresh Vegetables!');
@@ -121,6 +125,13 @@ export const PushNotificationsPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-[#0F1629] tracking-tight">Push Notifications</h1>
           <p className="text-sm text-[#7A8299] mt-0.5">Broadcast targeted alerts, promotional messages, and customer reminders</p>
         </div>
+        <Button
+          onClick={() => setIsSendModalOpen(true)}
+          className="bg-gradient-to-r from-[#2A3A65] to-[#384E85] text-white hover:opacity-95 font-semibold shadow-md gap-2 h-10 px-4 rounded-xl cursor-pointer"
+        >
+          <Bell className="w-4 h-4" />
+          <span>New Notification Ad</span>
+        </Button>
       </div>
 
       {/* Success Alert Banner */}
@@ -464,6 +475,12 @@ export const PushNotificationsPage: React.FC = () => {
           </table>
         </div>
       </Card>
+      {/* Send Notification / Ad Modal (Figma Design 1:42888) */}
+      <SendNotificationModal
+        isOpen={isSendModalOpen}
+        onClose={() => setIsSendModalOpen(false)}
+        onNotificationSent={(newNotif) => setLogs([newNotif, ...logs])}
+      />
     </div>
   );
 };
