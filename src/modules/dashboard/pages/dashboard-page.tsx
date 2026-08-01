@@ -143,6 +143,52 @@ export const DashboardPage: React.FC = () => {
     );
   };
 
+  // Revenue Trend Dynamic Data per Time Filter (Strictly bounded Y: 32 - 160)
+  const revenueTrendData = {
+    daily: {
+      yLabels: ['$20K', '$15K', '$10K', '$5K', '$0K'],
+      xLabels: ['12 AM', '3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM', '11 PM'],
+      retailPath: "M 50 140 C 90 155, 130 120, 174 130 C 210 140, 260 80, 298 70 C 330 60, 390 90, 421 45 C 450 35, 510 30, 545 55",
+      retailPolygon: "50,164 50,140 C 90 155, 130 120, 174 130 C 210 140, 260 80, 298 70 C 330 60, 390 90, 421 45 C 450 35, 510 30, 545 55 L 545,164",
+      wholesalePath: "M 50 155 C 90 160, 130 150, 174 148 C 210 145, 260 100, 298 95 C 330 90, 390 75, 421 115 C 450 125, 510 145, 545 150",
+      wholesalePolygon: "50,164 50,155 C 90 160, 130 150, 174 148 C 210 145, 260 100, 298 95 C 330 90, 390 75, 421 115 C 450 125, 510 145, 545 150 L 545,164",
+      retailTotal: '$58.4K',
+      wholesaleTotal: '$24.2K'
+    },
+    weekly: {
+      yLabels: ['$150K', '$112K', '$75K', '$37K', '$0K'],
+      xLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      retailPath: "M 50 130 C 90 125, 170 120, 215 110 C 260 100, 340 80, 380 55 C 420 40, 500 30, 545 45",
+      retailPolygon: "50,164 50,130 C 90 125, 170 120, 215 110 C 260 100, 340 80, 380 55 C 420 40, 500 30, 545 45 L 545,164",
+      wholesalePath: "M 50 145 C 90 140, 170 130, 215 125 C 260 120, 340 95, 380 85 C 420 75, 500 120, 545 135",
+      wholesalePolygon: "50,164 50,145 C 90 140, 170 130, 215 125 C 260 120, 340 95, 380 85 C 420 75, 500 120, 545 135 L 545,164",
+      retailTotal: '$412K',
+      wholesaleTotal: '$185K'
+    },
+    monthly: {
+      yLabels: ['$1200K', '$900K', '$600K', '$300K', '$0K'],
+      xLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      retailPath: "M 50 125 C 72 122, 117 110, 140 105 C 162 100, 207 105, 230 95 C 252 85, 297 80, 320 75 C 342 70, 387 68, 410 70 C 432 72, 477 48, 500 42 C 522 36, 535 34, 545 32",
+      retailPolygon: "50,164 50,125 C 72 122, 117 110, 140 105 C 162 100, 207 105, 230 95 C 252 85, 297 80, 320 75 C 342 70, 387 68, 410 70 C 432 72, 477 48, 500 42 C 522 36, 535 34, 545 32 L 545,164",
+      wholesalePath: "M 50 142 C 72 140, 117 132, 140 128 C 162 124, 207 118, 230 112 C 252 106, 297 100, 320 96 C 342 92, 387 85, 410 82 C 432 78, 477 68, 500 64 C 522 60, 535 56, 545 54",
+      wholesalePolygon: "50,164 50,142 C 72 140, 117 132, 140 128 C 162 124, 207 118, 230 112 C 252 106, 297 100, 320 96 C 342 92, 387 85, 410 82 C 432 78, 477 68, 500 64 C 522 60, 535 56, 545 54 L 545,164",
+      retailTotal: '$1.95M',
+      wholesaleTotal: '$892K'
+    },
+    yearly: {
+      yLabels: ['$15M', '$11M', '$8M', '$4M', '$0K'],
+      xLabels: ['2021', '2022', '2023', '2024', '2025', '2026'],
+      retailPath: "M 50 145 C 99 135, 198 115, 248 105 C 297 95, 396 68, 446 55 C 495 42, 520 38, 545 35",
+      retailPolygon: "50,164 50,145 C 99 135, 198 115, 248 105 C 297 95, 396 68, 446 55 C 495 42, 520 38, 545 35 L 545,164",
+      wholesalePath: "M 50 155 C 99 148, 198 135, 248 128 C 297 118, 396 95, 446 85 C 495 75, 520 68, 545 62",
+      wholesalePolygon: "50,164 50,155 C 99 148, 198 135, 248 128 C 297 118, 396 95, 446 85 C 495 75, 520 68, 545 62 L 545,164",
+      retailTotal: '$18.4M',
+      wholesaleTotal: '$8.2M'
+    }
+  };
+
+  const currentTrend = revenueTrendData[timeFilter];
+
   return (
     <div className="space-y-7 pb-10 select-none">
       {/* ---------------------------------------------------- */}
@@ -227,27 +273,9 @@ export const DashboardPage: React.FC = () => {
       {/* 3. BUSINESS OVERVIEW SECTION                         */}
       {/* ---------------------------------------------------- */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-[18px] font-extrabold text-[#0F1629] tracking-tight">Business Overview</h2>
-            <p className="text-[12px] text-[#7A8299]">Revenue analytics, order distribution, and category performance</p>
-          </div>
-
-          <div className="bg-[#F4F5F8] p-1 rounded-[12px] flex items-center gap-1 shrink-0 self-start sm:self-auto">
-            {(['daily', 'weekly', 'monthly', 'yearly'] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTimeFilter(t)}
-                className={`px-3 py-1.5 rounded-[9px] text-[12px] font-semibold capitalize transition cursor-pointer border-none ${
-                  timeFilter === t
-                    ? 'bg-[#384E85] text-white shadow-xs'
-                    : 'text-[#7A8299] hover:text-[#0F1629]'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
+        <div>
+          <h2 className="text-[18px] font-extrabold text-[#0F1629] tracking-tight">Business Overview</h2>
+          <p className="text-[12px] text-[#7A8299]">Revenue analytics, order distribution, and category performance</p>
         </div>
 
         {/* Two Column Grid: Revenue Trend + Order Status */}
@@ -255,14 +283,31 @@ export const DashboardPage: React.FC = () => {
           {/* Revenue Trend Line Chart (3/5 width) */}
           <Card className="lg:col-span-3 p-6 bg-white border border-[#384E85]/7 rounded-[20px] shadow-[0px_8px_30px_rgba(0,0,0,0.06)] flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
                   <h3 className="text-[15px] font-bold text-[#0F1629]">Revenue Trend</h3>
                   <p className="text-[12px] text-[#7A8299]">Retail vs Wholesale comparison</p>
                 </div>
+
+                {/* Daily, Weekly, Monthly, Yearly Time Filter Tabs inside Revenue Trend */}
+                <div className="bg-[#F4F5F8] p-1 rounded-[12px] flex items-center gap-1 shrink-0 self-start sm:self-auto">
+                  {(['daily', 'weekly', 'monthly', 'yearly'] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTimeFilter(t)}
+                      className={`px-3 py-1.5 rounded-[9px] text-[12px] font-semibold capitalize transition cursor-pointer border-none ${
+                        timeFilter === t
+                          ? 'bg-[#384E85] text-white shadow-xs'
+                          : 'text-[#7A8299] hover:text-[#0F1629]'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Chart SVG matching exact bezier curves in image */}
+              {/* Dynamic Chart SVG based on active timeFilter */}
               <div className="h-[220px] w-full relative">
                 <svg viewBox="0 0 600 200" className="w-full h-full overflow-visible">
                   <defs>
@@ -277,7 +322,7 @@ export const DashboardPage: React.FC = () => {
                   </defs>
 
                   {/* Grid Lines & Y Axis Labels */}
-                  {['$1200K', '$900K', '$600K', '$300K', '$0K'].map((lbl, idx) => {
+                  {currentTrend.yLabels.map((lbl, idx) => {
                     const y = 20 + idx * 36;
                     return (
                       <g key={idx}>
@@ -288,17 +333,21 @@ export const DashboardPage: React.FC = () => {
                   })}
 
                   {/* Retail Line & Area */}
-                  <polygon points="50,164 50,118 95,124 140,98 185,110 230,80 275,90 320,68 365,54 410,65 455,45 500,32 545,15 545,164" fill="url(#retailGrad)" />
-                  <path d="M 50 118 Q 72 128, 95 124 T 140 98 T 185 110 T 230 80 T 275 90 T 320 68 T 365 54 T 410 65 T 455 45 T 500 32 T 545 15" fill="none" stroke="#384E85" strokeWidth="2.5" strokeLinecap="round" />
+                  <polygon points={currentTrend.retailPolygon} fill="url(#retailGrad)" />
+                  <path d={currentTrend.retailPath} fill="none" stroke="#384E85" strokeWidth="2.5" strokeLinecap="round" />
 
                   {/* Wholesale Line (Dashed) & Area */}
-                  <polygon points="50,164 50,138 95,132 140,120 185,114 230,104 275,98 320,90 365,84 410,76 455,70 500,60 545,50 545,164" fill="url(#wholesaleGrad)" />
-                  <path d="M 50 138 Q 72 134, 95 132 T 140 120 T 185 114 T 230 104 T 275 98 T 320 90 T 365 84 T 410 76 T 455 70 T 500 60 T 545 50" fill="none" stroke="#10B981" strokeWidth="2" strokeDasharray="4 3" strokeLinecap="round" />
+                  <polygon points={currentTrend.wholesalePolygon} fill="url(#wholesaleGrad)" />
+                  <path d={currentTrend.wholesalePath} fill="none" stroke="#10B981" strokeWidth="2" strokeDasharray="4 3" strokeLinecap="round" />
 
-                  {/* X Axis Month Labels */}
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((m, i) => (
-                    <text key={i} x={50 + i * 45} y="186" textAnchor="middle" fill="#9CA3AF" fontSize="9" fontFamily="sans-serif">{m}</text>
-                  ))}
+                  {/* Dynamic X Axis Labels */}
+                  {currentTrend.xLabels.map((lbl, i) => {
+                    const step = (590 - 50) / Math.max(currentTrend.xLabels.length - 1, 1);
+                    const x = 50 + i * step;
+                    return (
+                      <text key={i} x={x} y="186" textAnchor="middle" fill="#9CA3AF" fontSize="9" fontFamily="sans-serif">{lbl}</text>
+                    );
+                  })}
                 </svg>
               </div>
             </div>
@@ -308,12 +357,12 @@ export const DashboardPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="w-5 h-[3px] rounded-full bg-[#384E85]" />
                 <span className="text-[#7A8299]">Retail</span>
-                <span className="font-bold text-[#0F1629]">$1.95M</span>
+                <span className="font-bold text-[#0F1629]">{currentTrend.retailTotal}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-5 h-[2px] rounded-full bg-[#10B981] border-b border-dashed border-[#10B981]" />
                 <span className="text-[#7A8299]">Wholesale</span>
-                <span className="font-bold text-[#0F1629]">$892K</span>
+                <span className="font-bold text-[#0F1629]">{currentTrend.wholesaleTotal}</span>
               </div>
             </div>
           </Card>

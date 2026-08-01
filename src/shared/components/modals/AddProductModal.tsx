@@ -17,20 +17,30 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
   const [pkgType, setPkgType] = useState('piece');
   const [piecesPerPkg, setPiecesPerPkg] = useState(12);
   const [pkgsPerCarton, setPkgsPerCarton] = useState(6);
-  const [invPackages, setInvPackages] = useState(10);
-  const [invPieces, setInvPieces] = useState(5);
-  const [priceRetail, setPriceRetail] = useState(4.50);
-  const [priceWholesale, setPriceWholesale] = useState(3.80);
-  const [priceCost, setPriceCost] = useState(2.90);
+  const [invCartons, setInvCartons] = useState(0);
+  const [invPackages, setInvPackages] = useState(0);
+  const [invPieces, setInvPieces] = useState(0);
+  const [priceRetail, setPriceRetail] = useState(45.00);
+  const [priceWholesale, setPriceWholesale] = useState(38.00);
+  const [priceCost, setPriceCost] = useState(29.00);
   const [promoEnabled, setPromoEnabled] = useState(false);
   const [promoDiscount, setPromoDiscount] = useState(25);
+  const [promoStartDate, setPromoStartDate] = useState('2026-08-01');
+  const [promoEndDate, setPromoEndDate] = useState('2026-08-31');
 
   if (!isOpen) return null;
 
-  const totalPieces = (invPackages * piecesPerPkg) + invPieces;
+  const pcsPerCarton = piecesPerPkg * pkgsPerCarton;
+  const totalPieces = pkgType === 'carton'
+    ? (invCartons * pcsPerCarton) + (invPackages * piecesPerPkg) + invPieces
+    : pkgType === 'package'
+    ? (invPackages * piecesPerPkg) + invPieces
+    : invPieces;
   const profitPerUnit = (priceRetail - priceCost).toFixed(2);
   const profitMargin = priceRetail > 0 ? (((priceRetail - priceCost) / priceRetail) * 100).toFixed(1) : '0.0';
   const discountedPrice = promoEnabled ? (priceRetail * (1 - promoDiscount / 100)).toFixed(2) : priceRetail.toFixed(2);
+  const inventoryValue = (totalPieces * priceCost).toFixed(2);
+  const savings = (priceRetail * (promoDiscount / 100)).toFixed(2);
 
   const getStepTitle = (s: number) => {
     switch (s) {
@@ -162,9 +172,10 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
             <div className="space-y-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#0F1629]">Packaging Type</h3>
-                <p className="text-[12px] text-[#7A8299]">Select how this product is packaged</p>
+                <p className="text-[12px] text-[#7A8299]">Select how this product is packaged and unit breakdown</p>
               </div>
 
+              {/* 3 Packaging Type Selection Cards */}
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { id: 'piece', name: 'Piece', desc: 'Individual item' },
@@ -174,21 +185,92 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
                   <div
                     key={pkg.id}
                     onClick={() => setPkgType(pkg.id)}
-                    className={`border-2 rounded-[12px] p-3.5 text-center cursor-pointer transition flex flex-col items-center justify-center gap-1 ${
-                      pkgType === pkg.id ? 'border-[#384E85] bg-[#EEF1F8] text-[#384E85] font-bold' : 'border-[#384E85]/15 bg-[#FAFAFA] text-[#7A8299]'
+                    className={`border-2 rounded-[14px] p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-1.5 ${
+                      pkgType === pkg.id 
+                        ? 'border-[#384E85] bg-[#EEF1F8] text-[#384E85] font-bold shadow-xs' 
+                        : 'border-[#384E85]/12 bg-[#FAFAFA] text-[#7A8299] hover:border-[#384E85]/30'
                     }`}
                   >
-                    <PkgIcon className="w-7 h-7 mb-1" />
-                    <div className="text-[13px] font-bold">{pkg.name}</div>
-                    <div className="text-[10px] opacity-80">{pkg.desc}</div>
+                    <PkgIcon className="w-6 h-6 mb-0.5" />
+                    <div className="text-[13.5px] font-bold">{pkg.name}</div>
+                    <div className="text-[10px] opacity-75">{pkg.desc}</div>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-gradient-to-br from-[#EEF1F8] to-[#E8EDF8] border border-[#384E85]/15 rounded-[14px] p-4 space-y-1.5">
-                <div className="text-[11px] font-bold text-[#384E85] uppercase tracking-[0.5px]">Packaging Summary</div>
-                <div className="flex justify-between text-[12.5px]"><span>Type</span><span className="font-mono font-bold capitalize text-[#0F1629]">{pkgType}</span></div>
-                <div className="flex justify-between text-[12.5px]"><span>Pieces Per Package</span><span className="font-mono font-bold text-[#0F1629]">{piecesPerPkg}</span></div>
+              {/* Dynamic Inputs based on Packaging Selection */}
+              {pkgType === 'package' && (
+                <div className="space-y-1.5 animate-fadeIn">
+                  <label className="block text-[12px] font-bold text-[#0F1629]">Pieces Per Package</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={piecesPerPkg}
+                    onChange={(e) => setPiecesPerPkg(Math.max(1, Number(e.target.value)))}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                  />
+                </div>
+              )}
+
+              {pkgType === 'carton' && (
+                <div className="grid grid-cols-2 gap-3 animate-fadeIn">
+                  <div className="space-y-1.5">
+                    <label className="block text-[12px] font-bold text-[#0F1629]">Pieces Per Package</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={piecesPerPkg}
+                      onChange={(e) => setPiecesPerPkg(Math.max(1, Number(e.target.value)))}
+                      className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[12px] font-bold text-[#0F1629]">Packages Per Carton</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={pkgsPerCarton}
+                      onChange={(e) => setPkgsPerCarton(Math.max(1, Number(e.target.value)))}
+                      className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Live Packaging Summary matching Figma design nodes 1:17031, 1:17157, 1:17293 */}
+              <div className="space-y-2 pt-1">
+                <h4 className="text-[13px] font-bold text-[#0F1629]">Live Packaging Summary</h4>
+                <div className="bg-gradient-to-br from-[#EEF1F8]/80 to-[#E8EDF8]/60 border border-[#384E85]/15 rounded-[16px] p-4 space-y-2.5 text-[12.5px]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#7A8299] font-medium">Packaging Type</span>
+                    <span className="font-bold text-[#0F1629] capitalize">{pkgType}</span>
+                  </div>
+
+                  {(pkgType === 'package' || pkgType === 'carton') && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#7A8299] font-medium">Pieces per Package</span>
+                      <span className="font-bold text-[#0F1629] font-mono">{piecesPerPkg} pcs</span>
+                    </div>
+                  )}
+
+                  {pkgType === 'carton' && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#7A8299] font-medium">Packages per Carton</span>
+                      <span className="font-bold text-[#0F1629] font-mono">{pkgsPerCarton} pkgs</span>
+                    </div>
+                  )}
+
+                  <div className="pt-2 border-t border-[#384E85]/12 flex justify-between items-center">
+                    <span className="text-[#384E85] font-bold">Total Pieces per Carton</span>
+                    <span className="font-mono font-extrabold text-[15px] text-[#384E85]">
+                      {pkgType === 'piece' 
+                        ? '1 pc' 
+                        : pkgType === 'package' 
+                        ? `${piecesPerPkg} pcs` 
+                        : `${piecesPerPkg * pkgsPerCarton} pcs`}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -197,27 +279,82 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
             <div className="space-y-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#0F1629]">Inventory</h3>
-                <p className="text-[12px] text-[#7A8299]">Set your current stock levels</p>
+                <p className="text-[12px] text-[#7A8299]">Set your current stock levels and view live breakdown calculation</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[12px] font-semibold text-[#0F1629] mb-1">Available Packages</label>
-                  <input type="number" value={invPackages} onChange={(e) => setInvPackages(Number(e.target.value))} className="w-full h-[41.5px] px-3 bg-[#F4F5F8] rounded-[12px] outline-none" />
-                </div>
-                <div>
-                  <label className="block text-[12px] font-semibold text-[#0F1629] mb-1">Available Pieces</label>
-                  <input type="number" value={invPieces} onChange={(e) => setInvPieces(Number(e.target.value))} className="w-full h-[41.5px] px-3 bg-[#F4F5F8] rounded-[12px] outline-none" />
+              {/* Inputs Grid matching Packaging Type */}
+              <div className={`grid gap-3 ${
+                pkgType === 'carton' ? 'grid-cols-3' : pkgType === 'package' ? 'grid-cols-2' : 'grid-cols-1'
+              }`}>
+                {pkgType === 'carton' && (
+                  <div className="space-y-1.5 animate-fadeIn">
+                    <label className="block text-[12px] font-bold text-[#0F1629]">Available Cartons</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={invCartons}
+                      onChange={(e) => setInvCartons(Math.max(0, Number(e.target.value)))}
+                      className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                    />
+                  </div>
+                )}
+
+                {(pkgType === 'carton' || pkgType === 'package') && (
+                  <div className="space-y-1.5 animate-fadeIn">
+                    <label className="block text-[12px] font-bold text-[#0F1629]">Available Packages</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={invPackages}
+                      onChange={(e) => setInvPackages(Math.max(0, Number(e.target.value)))}
+                      className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-[#0F1629]">Available Pieces</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={invPieces}
+                    onChange={(e) => setInvPieces(Math.max(0, Number(e.target.value)))}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                  />
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[#EEF1F8] to-[#E8EDF8] border border-[#384E85]/15 rounded-[14px] p-4 space-y-1.5">
-                <div className="text-[11px] font-bold text-[#384E85] uppercase tracking-[0.5px]">Inventory Calculation</div>
-                <div className="flex justify-between text-[12.5px]"><span>Packages × pieces/pkg</span><span className="font-mono font-bold">{invPackages} × {piecesPerPkg} = {invPackages * piecesPerPkg} pcs</span></div>
-                <div className="flex justify-between text-[12.5px]"><span>Individual pieces</span><span className="font-mono font-bold">{invPieces} pcs</span></div>
-                <div className="pt-2 border-t border-[#384E85]/15 flex justify-between items-center text-[15px] font-extrabold text-[#384E85]">
-                  <span>Total Stock Quantity:</span>
-                  <span className="font-mono text-[16px]">{totalPieces} pcs</span>
+              {/* Inventory Calculation Box matching Figma node 1:43088 */}
+              <div className="space-y-2 pt-1">
+                <h4 className="text-[13px] font-bold text-[#0F1629]">Inventory Calculation</h4>
+                <div className="bg-gradient-to-br from-[#EEF1F8]/80 to-[#E8EDF8]/60 border border-[#384E85]/15 rounded-[16px] p-4 space-y-2.5 text-[12.5px]">
+                  {pkgType === 'carton' && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#7A8299] font-medium">Cartons × pieces/carton</span>
+                      <span className="font-mono font-bold text-[#0F1629]">
+                        {invCartons} × {pcsPerCarton} = {invCartons * pcsPerCarton} pcs
+                      </span>
+                    </div>
+                  )}
+
+                  {(pkgType === 'carton' || pkgType === 'package') && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#7A8299] font-medium">Packages × pieces/pkg</span>
+                      <span className="font-mono font-bold text-[#0F1629]">
+                        {invPackages} × {piecesPerPkg} = {invPackages * piecesPerPkg} pcs
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#7A8299] font-medium">Individual pieces</span>
+                    <span className="font-mono font-bold text-[#0F1629]">{invPieces} pcs</span>
+                  </div>
+
+                  <div className="pt-2 border-t border-[#384E85]/12 flex justify-between items-center">
+                    <span className="text-[#384E85] font-bold">Total Stock Quantity</span>
+                    <span className="font-mono font-extrabold text-[16px] text-[#384E85]">{totalPieces} pcs</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -227,57 +364,145 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
             <div className="space-y-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#0F1629]">Pricing &amp; Offers</h3>
-                <p className="text-[12px] text-[#7A8299]">Set pricing and configure promotions</p>
+                <p className="text-[12px] text-[#7A8299]">Set pricing, view live profitability analytics, and configure promotions</p>
               </div>
 
+              {/* 3 Price Inputs Grid */}
               <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-[12px] font-semibold text-[#0F1629] mb-1">Cost Price ($)</label>
-                  <input type="number" value={priceCost} onChange={(e) => setPriceCost(Number(e.target.value))} className="w-full h-[41.5px] px-3 bg-[#F4F5F8] rounded-[12px] outline-none" />
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-[#0F1629]">Cost Price (EGP)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.5"
+                    value={priceCost}
+                    onChange={(e) => setPriceCost(Math.max(0, Number(e.target.value)))}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                  />
                 </div>
-                <div>
-                  <label className="block text-[12px] font-semibold text-[#0F1629] mb-1">Retail Price ($)</label>
-                  <input type="number" value={priceRetail} onChange={(e) => setPriceRetail(Number(e.target.value))} className="w-full h-[41.5px] px-3 bg-[#F4F5F8] rounded-[12px] outline-none" />
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-[#0F1629]">Retail Price (EGP)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.5"
+                    value={priceRetail}
+                    onChange={(e) => setPriceRetail(Math.max(0, Number(e.target.value)))}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                  />
                 </div>
-                <div>
-                  <label className="block text-[12px] font-semibold text-[#0F1629] mb-1">Wholesale Price ($)</label>
-                  <input type="number" value={priceWholesale} onChange={(e) => setPriceWholesale(Number(e.target.value))} className="w-full h-[41.5px] px-3 bg-[#F4F5F8] rounded-[12px] outline-none" />
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-[#0F1629]">Wholesale Price (EGP)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.5"
+                    value={priceWholesale}
+                    onChange={(e) => setPriceWholesale(Math.max(0, Number(e.target.value)))}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-[#384E85]/10 rounded-[12px] text-[13px] font-semibold text-[#0F1629] outline-none focus:border-[#384E85] transition"
+                  />
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[#EEF1F8] to-[#E8EDF8] border border-[#384E85]/15 rounded-[14px] p-4 space-y-1 text-[12.5px]">
-                <div className="flex justify-between"><span>Profit per Unit</span><span className="font-mono font-bold text-[#10B981]">${profitPerUnit}</span></div>
-                <div className="flex justify-between"><span>Profit Margin</span><span className="font-mono font-bold text-[#10B981]">{profitMargin}%</span></div>
+              {/* Live Profitability Summary Box matching Figma node 1:17439 */}
+              <div className="space-y-2 pt-1">
+                <h4 className="text-[13px] font-bold text-[#0F1629]">Live Profitability Summary</h4>
+                <div className="bg-gradient-to-br from-[#EEF1F8]/80 to-[#E8EDF8]/60 border border-[#384E85]/15 rounded-[16px] p-4 space-y-2 text-[12.5px]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#7A8299] font-medium">Cost Price</span>
+                    <span className="font-mono font-semibold text-[#0F1629]">{priceCost.toFixed(2)} EGP</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#7A8299] font-medium">Retail Price</span>
+                    <span className="font-mono font-semibold text-[#0F1629]">{priceRetail.toFixed(2)} EGP</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#7A8299] font-medium">Profit per Unit</span>
+                    <span className="font-mono font-bold text-[#10B981]">{profitPerUnit} EGP</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#7A8299] font-medium">Profit Margin</span>
+                    <span className="font-mono font-bold text-[#10B981]">{profitMargin}%</span>
+                  </div>
+                  <div className="pt-2 border-t border-[#384E85]/12 flex justify-between items-center">
+                    <span className="text-[#384E85] font-bold">Inventory Value</span>
+                    <span className="font-mono font-extrabold text-[15px] text-[#384E85]">{inventoryValue} EGP</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Customer App Card Preview matching modals.html */}
-              <div className="p-4 bg-[#FFF8F8] border border-[#EF4444]/20 rounded-[16px] space-y-3">
+              {/* Enable Offer / Promotion Box matching Figma node 1:17439 */}
+              <div className="p-4.5 bg-white border border-[#384E85]/12 rounded-[18px] space-y-3.5 shadow-2xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-bold text-[#EF4444]">Enable Offer / Promotion</span>
-                  <input type="checkbox" checked={promoEnabled} onChange={(e) => setPromoEnabled(e.target.checked)} className="w-5 h-5 accent-[#EF4444] cursor-pointer" />
+                  <div>
+                    <div className="text-[13px] font-bold text-[#0F1629]">Enable Offer / Promotion</div>
+                    <div className="text-[11px] text-[#7A8299]">Set a discounted price for this product</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={promoEnabled}
+                    onChange={(e) => setPromoEnabled(e.target.checked)}
+                    className="w-5 h-5 accent-[#384E85] cursor-pointer"
+                  />
                 </div>
 
                 {promoEnabled && (
-                  <div className="pt-2 border-t border-[#EF4444]/15">
-                    <label className="block text-[11px] font-semibold text-[#0F1629] mb-1">Discount %</label>
-                    <input type="number" value={promoDiscount} onChange={(e) => setPromoDiscount(Number(e.target.value))} className="w-full h-9 px-3 bg-white rounded-lg text-xs outline-none border border-rose-200" />
-                  </div>
-                )}
+                  <div className="space-y-3 pt-3 border-t border-[#384E85]/10 animate-fadeIn">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-[#0F1629]">Discount %</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={99}
+                          value={promoDiscount}
+                          onChange={(e) => setPromoDiscount(Math.min(99, Math.max(1, Number(e.target.value))))}
+                          placeholder="e.g. 25"
+                          className="w-full h-9 px-3 bg-[#F4F5F8] border border-[#384E85]/10 rounded-lg text-xs font-semibold outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-[#0F1629]">Start Date</label>
+                        <input
+                          type="date"
+                          value={promoStartDate}
+                          onChange={(e) => setPromoStartDate(e.target.value)}
+                          className="w-full h-9 px-3 bg-[#F4F5F8] border border-[#384E85]/10 rounded-lg text-xs font-semibold outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-[#0F1629]">End Date</label>
+                        <input
+                          type="date"
+                          value={promoEndDate}
+                          onChange={(e) => setPromoEndDate(e.target.value)}
+                          className="w-full h-9 px-3 bg-[#F4F5F8] border border-[#384E85]/10 rounded-lg text-xs font-semibold outline-none"
+                        />
+                      </div>
+                    </div>
 
-                <div className="text-[10px] font-bold text-[#7A8299] uppercase">Customer App Card Preview</div>
-                <div className="bg-white border border-[#EF4444]/15 rounded-[12px] p-3.5 flex items-center gap-3.5">
-                  <div className="w-[52px] h-[52px] rounded-[12px] bg-[#EEF1F8] text-[#384E85] flex items-center justify-center shrink-0">
-                    <ShoppingCart className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-[13.5px] text-[#0F1629]">{name || 'Product Name'}</div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      {promoEnabled && <span className="text-[12.5px] text-[#9CA3AF] line-through">${priceRetail.toFixed(2)}</span>}
-                      {promoEnabled && <span className="text-[9.5px] font-bold bg-[#EF4444] text-white px-1.5 py-0.5 rounded">{promoDiscount}% OFF</span>}
-                      <span className="text-[15px] font-extrabold text-[#10B981]">${discountedPrice}</span>
+                    {/* Customer App Preview Box */}
+                    <div className="bg-[#FAFAFA] border border-[#384E85]/10 rounded-[14px] p-3.5 space-y-2">
+                      <div className="text-[11px] font-bold text-[#7A8299] uppercase tracking-wider">Customer App Preview</div>
+                      <div className="flex items-center gap-3.5 bg-white p-3 rounded-xl border border-[#384E85]/8">
+                        <div className="w-[48px] h-[48px] rounded-xl bg-[#EEF1F8] text-[#384E85] flex items-center justify-center text-xl shrink-0 font-bold">
+                          🛒
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-[13px] text-[#0F1629] truncate">{name || 'Product Name'}</div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[12px] text-[#9CA3AF] line-through font-mono">{priceRetail.toFixed(2)} EGP</span>
+                            <span className="text-[9.5px] font-bold bg-[#EF4444] text-white px-1.5 py-0.5 rounded">{promoDiscount}% OFF</span>
+                            <span className="text-[14px] font-extrabold text-[#10B981] font-mono">{discountedPrice} EGP</span>
+                          </div>
+                          <div className="text-[10px] text-[#7A8299] mt-0.5 font-medium">
+                            You save: <strong className="text-[#10B981] font-mono">{savings} EGP</strong>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
