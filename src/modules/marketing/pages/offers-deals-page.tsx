@@ -18,7 +18,10 @@ import {
   Copy, 
   Image as ImageIcon,
   Check,
-  AlertCircle
+  AlertCircle,
+  Zap,
+  Rocket,
+  X
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
@@ -55,14 +58,16 @@ export const OffersDealsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  // Modal State
+  // Modal State (Figma Design 1:17614)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newCode, setNewCode] = useState('');
+  const [selectedOfferType, setSelectedOfferType] = useState<string>('Flash Deal');
   const [newTitle, setNewTitle] = useState('');
-  const [newValue, setNewValue] = useState(15);
-  const [newType, setNewType] = useState<'percentage' | 'fixed'>('percentage');
-  const [newMinOrder, setNewMinOrder] = useState(100);
-  const [newCategory, setNewCategory] = useState('All Categories');
+  const [newProduct, setNewProduct] = useState('All Products & Categories');
+  const [newOriginalPrice, setNewOriginalPrice] = useState<string>('');
+  const [newDiscountPercent, setNewDiscountPercent] = useState<string>('');
+  const [newStartDate, setNewStartDate] = useState<string>('');
+  const [newEndDate, setNewEndDate] = useState<string>('');
+  const [newCode, setNewCode] = useState('');
 
   const [offers, setOffers] = useState<Offer[]>([
     {
@@ -189,26 +194,36 @@ export const OffersDealsPage: React.FC = () => {
   };
 
   const handleCreateOffer = () => {
-    if (!newCode || !newTitle) return;
+    const offerTitle = newTitle || `${selectedOfferType} Deal`;
+    const discountVal = parseFloat(newDiscountPercent) || 25;
+    const origPriceVal = parseFloat(newOriginalPrice) || 100;
+    const generatedCode = newCode 
+      ? newCode.toUpperCase() 
+      : `${selectedOfferType.replace(/\s+/g, '').toUpperCase()}${discountVal}`;
+
     const newOffer: Offer = {
       id: Date.now().toString(),
-      code: newCode.toUpperCase(),
-      title: newTitle,
-      discountType: newType,
-      discountValue: newValue,
-      minOrderValue: newMinOrder,
+      code: generatedCode,
+      title: offerTitle,
+      discountType: 'percentage',
+      discountValue: discountVal,
+      minOrderValue: Math.round(origPriceVal * 0.75),
       usageLimit: 500,
       usedCount: 0,
       status: 'active',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: '2026-09-01',
-      category: newCategory,
-      iconBg: 'bg-[#EEF1F8] text-[#384E85]'
+      startDate: newStartDate || new Date().toISOString().split('T')[0],
+      endDate: newEndDate || '2026-09-01',
+      category: newProduct,
+      iconBg: selectedOfferType === 'Flash Deal' ? 'bg-[#FEF2F2] text-[#EF4444]' : 'bg-[#EEF1F8] text-[#384E85]'
     };
     setOffers([newOffer, ...offers]);
     setIsCreateModalOpen(false);
-    setNewCode('');
     setNewTitle('');
+    setNewOriginalPrice('');
+    setNewDiscountPercent('');
+    setNewStartDate('');
+    setNewEndDate('');
+    setNewCode('');
   };
 
   const filteredOffers = offers.filter(offer => {
@@ -528,111 +543,170 @@ export const OffersDealsPage: React.FC = () => {
         </Card>
       )}
 
-      {/* Create Offer Modal */}
+      {/* Create Offer Modal (Figma Design 1:17614) */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-[#384E85]/10 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-150">
-            <div className="p-5 border-b border-[#384E85]/8 flex items-center justify-between bg-[#FAFAFA]">
-              <div className="flex items-center gap-2 text-[#384E85]">
-                <Tag className="w-5 h-5" />
-                <h3 className="font-bold text-base text-[#0F1629]">Create Promotional Offer</h3>
+        <div className="fixed inset-0 bg-[#0F1629]/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[24px] shadow-[0px_40px_80px_0px_rgba(0,0,0,0.2)] w-full max-w-[580px] overflow-hidden relative flex flex-col">
+            
+            {/* Header with Red Gradient */}
+            <div className="bg-gradient-to-r from-[#EF4444] to-[#B91C1C] px-6 py-5 flex items-center justify-between text-white shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
+                  <Tag className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-[15px] leading-[22.5px] text-white tracking-tight">Create New Offer</h3>
+                  <p className="text-[11px] leading-[16.5px] text-white/75">Set up a promotion or flash deal</p>
+                </div>
               </div>
               <button 
                 onClick={() => setIsCreateModalOpen(false)}
-                className="text-[#7A8299] hover:text-[#0F1629] p-1 rounded-lg cursor-pointer"
+                className="w-8 h-8 rounded-[10px] bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer text-white"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs text-[#0F1629]">
-              <div>
-                <label className="font-semibold block mb-1">Coupon Code</label>
-                <input
-                  type="text"
-                  value={newCode}
-                  onChange={(e) => setNewCode(e.target.value.toUpperCase())}
-                  placeholder="e.g. FLASH50"
-                  className="w-full h-10 px-3 border border-[#384E85]/15 rounded-xl font-mono uppercase font-bold text-[#384E85] focus:outline-none focus:border-[#384E85]"
-                />
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(85vh-130px)]">
+              {/* Offer Type Selection Pills */}
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[
+                  { id: 'Flash Deal', label: 'Flash Deal', hasIcon: true },
+                  { id: 'Seasonal Sale', label: 'Seasonal Sale' },
+                  { id: 'Loyalty Reward', label: 'Loyalty Reward' },
+                  { id: 'Bulk Discount', label: 'Bulk Discount' },
+                  { id: 'Bundle Offer', label: 'Bundle Offer' }
+                ].map((pill) => {
+                  const isSelected = selectedOfferType === pill.id;
+                  return (
+                    <button
+                      key={pill.id}
+                      type="button"
+                      onClick={() => setSelectedOfferType(pill.id)}
+                      className={`px-3.5 py-1.5 rounded-[20px] text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+                        isSelected 
+                          ? 'bg-[#FEF2F2] border-[#EF4444] text-[#EF4444] shadow-xs' 
+                          : 'bg-white border-[#384E85]/15 text-[#7A8299] hover:border-[#384E85]/30 hover:text-[#0F1629]'
+                      }`}
+                    >
+                      {pill.hasIcon && (
+                        <Zap className={`w-3 h-3 ${isSelected ? 'text-[#EF4444]' : 'text-[#7A8299]'}`} />
+                      )}
+                      <span>{pill.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              <div>
-                <label className="font-semibold block mb-1">Campaign Title</label>
+              {/* Offer Name Input */}
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-semibold text-[#4A5568] flex items-center gap-0.5">
+                  Offer Name <span className="text-[#EF4444]">*</span>
+                </label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Weekend Flash Sale"
-                  className="w-full h-10 px-3 border border-[#384E85]/15 rounded-xl focus:outline-none focus:border-[#384E85]"
+                  placeholder='e.g. "Weekend Mega Deal"'
+                  className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-transparent focus:border-[#EF4444] focus:bg-white rounded-[12px] text-[13px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none transition"
                 />
               </div>
 
+              {/* Apply to Product Input */}
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-semibold text-[#4A5568] flex items-center gap-0.5">
+                  Apply to Product <span className="text-[#EF4444]">*</span>
+                </label>
+                <select
+                  value={newProduct}
+                  onChange={(e) => setNewProduct(e.target.value)}
+                  className="w-full h-[40px] px-3.5 bg-[#F4F5F8] border border-transparent focus:border-[#EF4444] focus:bg-white rounded-[12px] text-[13px] text-[#0F1629] outline-none transition cursor-pointer"
+                >
+                  <option value="All Products & Categories">All Products & Categories</option>
+                  <option value="Fresh Organic Produce">Fresh Organic Produce</option>
+                  <option value="Dairy & Milk">Dairy & Milk</option>
+                  <option value="Beverages & Juices">Beverages & Juices</option>
+                  <option value="Snacks & Bakery">Snacks & Bakery</option>
+                  <option value="Meat & Poultry">Meat & Poultry</option>
+                </select>
+              </div>
+
+              {/* Original Price & Discount % (2 Columns) */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-semibold block mb-1">Discount Type</label>
-                  <select
-                    value={newType}
-                    onChange={(e) => setNewType(e.target.value as any)}
-                    className="w-full h-10 px-3 border border-[#384E85]/15 rounded-xl focus:outline-none focus:border-[#384E85] bg-white"
-                  >
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Amount ($)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="font-semibold block mb-1">Value ({newType === 'percentage' ? '%' : '$'})</label>
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-semibold text-[#4A5568] flex items-center gap-0.5">
+                    Original Price (EGP) <span className="text-[#EF4444]">*</span>
+                  </label>
                   <input
                     type="number"
-                    value={newValue}
-                    onChange={(e) => setNewValue(Number(e.target.value))}
-                    className="w-full h-10 px-3 border border-[#384E85]/15 rounded-xl focus:outline-none focus:border-[#384E85]"
+                    step="0.01"
+                    value={newOriginalPrice}
+                    onChange={(e) => setNewOriginalPrice(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-transparent focus:border-[#EF4444] focus:bg-white rounded-[12px] text-[13px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none transition"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-semibold text-[#4A5568] flex items-center gap-0.5">
+                    Discount % <span className="text-[#EF4444]">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={newDiscountPercent}
+                    onChange={(e) => setNewDiscountPercent(e.target.value)}
+                    placeholder="e.g. 25"
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-transparent focus:border-[#EF4444] focus:bg-white rounded-[12px] text-[13px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none transition"
                   />
                 </div>
               </div>
 
+              {/* Start Date & End Date (2 Columns) */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-semibold block mb-1">Min Order Spend ($)</label>
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-semibold text-[#4A5568]">
+                    Start Date
+                  </label>
                   <input
-                    type="number"
-                    value={newMinOrder}
-                    onChange={(e) => setNewMinOrder(Number(e.target.value))}
-                    className="w-full h-10 px-3 border border-[#384E85]/15 rounded-xl focus:outline-none focus:border-[#384E85]"
+                    type="date"
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value)}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-transparent focus:border-[#EF4444] focus:bg-white rounded-[12px] text-[13px] text-[#0F1629] outline-none transition"
                   />
                 </div>
-                <div>
-                  <label className="font-semibold block mb-1">Target Category</label>
-                  <select
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full h-10 px-3 border border-[#384E85]/15 rounded-xl focus:outline-none focus:border-[#384E85] bg-white"
-                  >
-                    <option value="All Categories">All Categories</option>
-                    <option value="Fresh Produce">Fresh Produce</option>
-                    <option value="Dairy & Eggs">Dairy & Eggs</option>
-                    <option value="Beverages">Beverages</option>
-                    <option value="Snacks & Bakery">Snacks & Bakery</option>
-                  </select>
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-semibold text-[#4A5568]">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    value={newEndDate}
+                    onChange={(e) => setNewEndDate(e.target.value)}
+                    className="w-full h-[41.5px] px-3.5 bg-[#F4F5F8] border border-transparent focus:border-[#EF4444] focus:bg-white rounded-[12px] text-[13px] text-[#0F1629] outline-none transition"
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="p-4 bg-[#FAFAFA] border-t border-[#384E85]/8 flex justify-end gap-3">
-              <Button
-                variant="outline"
+            {/* Modal Footer */}
+            <div className="bg-[#FAFAFA] border-t border-[rgba(56,78,133,0.08)] px-6 py-3.5 flex items-center justify-end gap-2.5 rounded-b-[24px] shrink-0">
+              <button
+                type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="h-10 px-4 text-xs font-semibold rounded-xl"
+                className="px-[19px] py-[10px] rounded-[12px] border border-[rgba(56,78,133,0.18)] text-[#4A5568] text-[13px] font-semibold hover:bg-gray-100 transition cursor-pointer"
               >
                 Cancel
-              </Button>
-              <Button
+              </button>
+              <button
+                type="button"
                 onClick={handleCreateOffer}
-                className="h-10 px-5 text-xs font-semibold rounded-xl bg-gradient-to-r from-[#2A3A65] to-[#384E85] text-white hover:opacity-95 cursor-pointer"
+                className="px-[22px] py-[9px] rounded-[12px] bg-gradient-to-r from-[#2A3A65] to-[#384E85] text-white hover:opacity-95 text-[13px] font-bold flex items-center gap-2 shadow-sm transition cursor-pointer"
               >
-                Save &amp; Activate Offer
-              </Button>
+                <Rocket className="w-3.5 h-3.5 text-white" />
+                <span>Launch Offer</span>
+              </button>
             </div>
+
           </div>
         </div>
       )}
