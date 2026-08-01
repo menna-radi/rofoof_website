@@ -50,8 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       href: '/orders',
       children: [
         { id: 'all-orders', label: t('nav.allOrders'), href: '/orders' },
-        { id: 'active-orders', label: t('nav.activeOrders'), href: '/orders?tab=active', badge: '164', badgeClass: 'bg-[#EEF1F8] text-[#384E85]' },
-        { id: 'pending', label: t('nav.pending'), href: '/orders?tab=pending', badge: '7', badgeClass: 'bg-[#ECFDF5] text-[#10B981]' },
+        { id: 'active-orders', label: t('nav.activeOrders'), href: '/orders?tab=active', badge: '184', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
         { id: 'delivered', label: t('nav.delivered'), href: '/orders?tab=delivered' },
         { id: 'cancelled', label: t('nav.cancelled'), href: '/orders?tab=cancelled' }
       ]
@@ -225,22 +224,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {hasChildren && isExpanded && (
                   <div className="pl-[26px] flex flex-col gap-[1px] mt-[1px]">
                     {item.children.map((child) => {
-                      const isChildActive = location.pathname + location.search === child.href || location.pathname === child.href.split('?')[0];
+                      const fullCurrent = location.pathname + location.search;
+                      const isChildActive = child.href === '/orders'
+                        ? (location.pathname === '/orders' && (!location.search || location.search === '?tab=all'))
+                        : fullCurrent === child.href;
+
                       return (
                         <button
                           key={child.id}
                           onClick={() => navigate(child.href)}
                           className={cn(
-                            "w-full flex items-center gap-[8px] px-[9px] py-[6px] rounded-[8px] text-[12.5px] transition cursor-pointer text-left border-none bg-none",
+                            "w-[205px] flex items-center gap-[8px] px-[9px] py-[6px] rounded-[8px] text-[12.5px] transition cursor-pointer text-left border-none bg-none font-sans",
                             isChildActive
-                              ? "bg-[#EEF1F8]/80 text-[#0F1629] font-bold"
+                              ? "bg-[#EEF1F8] text-[#384E85] font-semibold"
                               : "text-[#6B7280] hover:bg-[#EEF1F8] hover:text-[#0F1629]"
                           )}
                         >
-                          <span className={cn("w-[5px] h-[5px] rounded-full shrink-0", isChildActive ? "bg-[#384E85]" : "bg-[#CBD5E0]")} />
-                          <span>{child.label}</span>
+                          <span className={cn("w-[5px] h-[5px] rounded-[2.5px] shrink-0", isChildActive ? "bg-[#384E85]" : "bg-[#CBD5E0]")} />
+                          <span className="flex-1 truncate">{child.label}</span>
                           {child.badge && (
-                            <span className={cn("ml-auto px-[6px] py-[1px] rounded-[8px] text-[9.5px] font-bold", child.badgeClass || "bg-[#FEF2F2] text-[#EF4444]")}>
+                            <span className={cn("ml-auto px-[6px] py-[1px] rounded-[8px] text-[9.5px] font-bold shrink-0", child.badgeClass || "bg-[#FEF2F2] text-[#EF4444]")}>
                               {child.badge}
                             </span>
                           )}
