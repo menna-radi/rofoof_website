@@ -482,7 +482,7 @@ export const DispatchBoardPage: React.FC = () => {
                             <Star className="w-3 h-3 text-[#F59E0B] fill-[#F59E0B]" /> {d.rating}
                           </span>
                           <span className="flex items-center gap-0.5">
-                            <Package className="w-3 h-3 text-[#7A8299]" /> {d.orders} orders
+                            <Truck className="w-3 h-3 text-[#7A8299]" /> {d.orders} orders
                           </span>
                           <span className="flex items-center gap-0.5">
                             <MapPin className="w-3 h-3 text-[#7A8299]" /> {d.distance}
