@@ -29,10 +29,12 @@ import {
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
+import { ExportDataModal } from '@/shared/components/modals/ExportDataModal';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [timeFilter, setTimeFilter] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [exportOpen, setExportOpen] = useState(false);
 
   // Top 8 Stat Cards Data
   const stats = [
@@ -896,10 +898,12 @@ export const DashboardPage: React.FC = () => {
       {/* BOTTOM ACTION: EXPORT DATA                           */}
       {/* ---------------------------------------------------- */}
       <div className="flex justify-start">
-        <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
+        <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />} onClick={() => setExportOpen(true)}>
           Export Data
         </Button>
       </div>
+
+      <ExportDataModal isOpen={exportOpen} onClose={() => setExportOpen(false)} pageName="Dashboard" />
     </div>
   );
 };

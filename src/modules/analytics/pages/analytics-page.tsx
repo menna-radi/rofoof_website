@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
+import { ExportDataModal } from '@/shared/components/modals/ExportDataModal';
 
 export const AnalyticsPage: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [exportOpen, setExportOpen] = useState(false);
 
   const orderStatuses = [
     { label: 'Delivered', count: '1,884', pct: '58%', color: '#10B981', dotClass: 'bg-[#10B981]', textClass: 'text-[#10B981]' },
@@ -195,7 +197,7 @@ export const AnalyticsPage: React.FC = () => {
             <p className="text-[12px] text-[#7A8299] leading-[18px]">Sales distribution by product category</p>
           </div>
           {/* Export Data button */}
-          <button className="flex items-center gap-[5px] px-[14px] py-[8px] bg-[#F4F5F8] rounded-[12px] text-[13px] font-medium text-[#4A5568] border-none cursor-pointer hover:bg-[#E8EBF2] transition-colors">
+          <button onClick={() => setExportOpen(true)} className="flex items-center gap-[5px] px-[14px] py-[8px] bg-[#F4F5F8] rounded-[12px] text-[13px] font-medium text-[#4A5568] border-none cursor-pointer hover:bg-[#E8EBF2] transition-colors">
             <Download className="w-[14px] h-[14px]" />
             Export Data
           </button>
@@ -236,6 +238,7 @@ export const AnalyticsPage: React.FC = () => {
           </div>
         </div>
       </Card>
+      <ExportDataModal isOpen={exportOpen} onClose={() => setExportOpen(false)} pageName="Analytics" />
     </div>
   );
 };

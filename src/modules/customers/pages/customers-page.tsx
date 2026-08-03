@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   DollarSign, 
   Building2, 
@@ -10,8 +10,10 @@ import {
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
+import { ExportDataModal } from '@/shared/components/modals/ExportDataModal';
 
 export const CustomersPage: React.FC = () => {
+  const [exportOpen, setExportOpen] = useState(false);
   const statCards = [
     {
       icon: <DollarSign className="w-4 h-4 text-[#384E85]" />,
@@ -297,10 +299,12 @@ export const CustomersPage: React.FC = () => {
           size="sm"
           className="bg-[#F4F5F8] border-none text-[#4A5568] hover:bg-[#E2E8F0] rounded-[12px] px-3.5 py-2 text-[13px] font-medium"
           leftIcon={<Download className="w-3.5 h-3.5" />}
+          onClick={() => setExportOpen(true)}
         >
           Export Data
         </Button>
       </div>
+      <ExportDataModal isOpen={exportOpen} onClose={() => setExportOpen(false)} pageName="Customers" />
     </div>
   );
 };

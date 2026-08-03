@@ -15,6 +15,7 @@ import {
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { AddDriverModal } from '@/shared/components/modals/AddDriverModal';
+import { ExportDataModal } from '@/shared/components/modals/ExportDataModal';
 
 interface Driver {
   id: string;
@@ -39,6 +40,7 @@ export const DriversPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddDriverOpen, setIsAddDriverOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const [drivers, setDrivers] = useState<Driver[]>([
     { id: '1', name: 'Ahmed Khalil', handle: '@ahmed.khalil', initials: 'AK', phone: '+20 100 234 5678', nationalId: '28901234500012', vehicleType: 'Motorcycle', vehicleIcon: '🏍️', licensePlate: 'ABC-1234', status: 'Online', rating: 4.9, totalTrips: 1842, activeOrders: 3, earnings: '184.50 EGP', avatarBg: 'from-[#384E85] to-[#6B8ED4]' },
@@ -340,6 +342,7 @@ export const DriversPage: React.FC = () => {
           size="sm"
           className="bg-[#F4F5F8] border-none text-[#4A5568] hover:bg-[#E2E8F0] rounded-[12px] px-3.5 py-2 text-[13px] font-medium"
           leftIcon={<Download className="w-3.5 h-3.5" />}
+          onClick={() => setExportOpen(true)}
         >
           Export Data
         </Button>
@@ -351,6 +354,7 @@ export const DriversPage: React.FC = () => {
         onClose={() => setIsAddDriverOpen(false)}
         onDriverAdded={(newDriver) => setDrivers([newDriver, ...drivers])}
       />
+      <ExportDataModal isOpen={exportOpen} onClose={() => setExportOpen(false)} pageName="Drivers" />
     </div>
   );
 };

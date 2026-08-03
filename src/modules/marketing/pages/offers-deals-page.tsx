@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Megaphone, 
   Tag, 
@@ -10,6 +10,7 @@ import {
   Download 
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
+import { ExportDataModal } from '@/shared/components/modals/ExportDataModal';
 
 interface CampaignItem {
   id: string;
@@ -27,6 +28,7 @@ interface CampaignItem {
 }
 
 export const OffersDealsPage: React.FC = () => {
+  const [exportOpen, setExportOpen] = useState(false);
   const campaignItems: CampaignItem[] = [
     {
       id: 'c1',
@@ -222,11 +224,12 @@ export const OffersDealsPage: React.FC = () => {
 
           {/* Export Data Button */}
           <div>
-            <button className="h-9 px-4 bg-[#F4F5F8] hover:bg-[#EEF1F8] text-[#4A5568] text-[12px] font-semibold rounded-[12px] flex items-center justify-center gap-1.5 cursor-pointer transition border-none shadow-2xs">
+            <button onClick={() => setExportOpen(true)} className="h-9 px-4 bg-[#F4F5F8] hover:bg-[#EEF1F8] text-[#4A5568] text-[12px] font-semibold rounded-[12px] flex items-center justify-center gap-1.5 cursor-pointer transition border-none shadow-2xs">
               <Download className="w-3.5 h-3.5 text-[#4A5568]" />
               <span>Export Data</span>
             </button>
           </div>
+          <ExportDataModal isOpen={exportOpen} onClose={() => setExportOpen(false)} pageName="Offers & Deals" />
         </div>
 
         {/* Right Column: Push Notification Analytics */}

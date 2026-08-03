@@ -19,6 +19,7 @@ import {
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { AddProductModal } from '@/shared/components/modals/AddProductModal';
+import { ExportDataModal } from '@/shared/components/modals/ExportDataModal';
 
 interface Product {
   id: string;
@@ -44,6 +45,7 @@ export const ProductsPage: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'published' | 'unpublished' | 'draft' | 'on_offer'>('all');
   const [search, setSearch] = useState('');
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const [viewProduct, setViewProduct] = useState<Product | null>(null);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
@@ -138,7 +140,7 @@ export const ProductsPage: React.FC = () => {
           <p className="text-[13px] text-[#7A8299] mt-0.5">{products.length} products · <span className="font-semibold text-[#10B981]">{liveCount} live</span></p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="h-[38px] px-3.5 rounded-[12px] border border-[#384E85]/20 bg-white text-[#4A5568] text-[12.5px] font-semibold flex items-center gap-2 hover:bg-gray-50 transition cursor-pointer">
+          <button onClick={() => setExportOpen(true)} className="h-[38px] px-3.5 rounded-[12px] border border-[#384E85]/20 bg-white text-[#4A5568] text-[12.5px] font-semibold flex items-center gap-2 hover:bg-gray-50 transition cursor-pointer">
             <Download className="w-3.5 h-3.5 text-[#7A8299]" />
             <span>Export Data</span>
           </button>
@@ -730,6 +732,7 @@ export const ProductsPage: React.FC = () => {
         isOpen={isAddProductOpen}
         onClose={() => setIsAddProductOpen(false)}
       />
+      <ExportDataModal isOpen={exportOpen} onClose={() => setExportOpen(false)} pageName="Products" />
     </div>
   );
 };

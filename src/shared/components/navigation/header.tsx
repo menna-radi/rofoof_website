@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
-import { Search, Bell, ChevronDown } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Search, Bell, ChevronDown, Settings, LogOut, User, ShieldCheck } from 'lucide-react';
 import { LanguageSwitcher } from './language-switcher';
 
 interface HeaderProps {
@@ -11,6 +11,9 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const getPageTitle = (path: string) => {
     if (path.startsWith('/orders')) return t('nav.orders');
@@ -26,6 +29,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
     if (path.startsWith('/settings')) return t('nav.settings');
     return t('nav.dashboard');
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="h-[64px] min-h-[64px] bg-white border-b border-[#384E85]/8 px-[32px] flex items-center gap-[16px] sticky top-0 z-20 shadow-xs">
@@ -58,16 +72,84 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
           </span>
         </button>
 
-        {/* User Info Capsule */}
-        <div className="flex items-center gap-[8px] p-[4px_8px_4px_4px] rounded-[8px] cursor-pointer hover:bg-[#FAFAFA] transition">
-          <div className="w-[32px] h-[32px] rounded-[8px] bg-gradient-to-br from-[#384E85] to-[#6B8ED4] text-white flex items-center justify-center font-semibold text-[11px]">
-            AK
-          </div>
-          <div className="hidden sm:block leading-tight text-left">
-            <div className="text-[12px] font-semibold text-[#0F1629]">{t('common.adminUser')}</div>
-            <div className="text-[10px] text-[#7A8299]">{t('common.superAdmin')}</div>
-          </div>
-          <ChevronDown className="w-3 h-3 text-[#7A8299]" />
+        {/* User Info Capsule with dropdown */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setUserMenuOpen((prev) => !prev)}
+            className="flex items-center gap-[8px] p-[4px_8px_4px_4px] rounded-[8px] cursor-pointer hover:bg-[#FAFAFA] transition border-none bg-transparent"
+          >
+            <div className="w-[32px] h-[32px] rounded-[8px] bg-gradient-to-br from-[#384E85] to-[#6B8ED4] text-white flex items-center justify-center font-semibold text-[11px]">
+              AK
+            </div>
+            <div className="hidden sm:block leading-tight text-left">
+              <div className="text-[12px] font-semibold text-[#0F1629]">{t('common.adminUser')}</div>
+              <div className="text-[10px] text-[#7A8299]">{t('common.superAdmin')}</div>
+            </div>
+            <ChevronDown
+              className="w-3 h-3 text-[#7A8299] transition-transform duration-200"
+              style={{ transform: userMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+            />
+          </button>
+
+          {/* Dropdown Menu */}
+          {userMenuOpen && (
+            <div
+              className="absolute right-0 top-[calc(100%+8px)] bg-white rounded-[16px] overflow-hidden z-50 min-w-[210px]"
+              style={{
+                boxShadow: '0px 8px 30px rgba(0,0,0,0.12)',
+                border: '1px solid rgba(56,78,133,0.08)',
+              }}
+            >
+              {/* User info header */}
+              <div className="px-[14px] py-[12px]" style={{ borderBottom: '1px solid rgba(56,78,133,0.07)' }}>
+                <div className="flex items-center gap-[10px]">
+                  <div className="w-[36px] h-[36px] rounded-[10px] bg-gradient-to-br from-[#384E85] to-[#6B8ED4] text-white flex items-center justify-center font-bold text-[12px] shrink-0">
+                    AK
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#0f1629] text-[13px]">{t('common.adminUser')}</p>
+                    <p className="text-[11px] text-[#7a8299]">admin@rofoof.com</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Menu Items */}
+              <div className="p-[6px]">
+                <button
+                  onClick={() => { navigate('/settings?tab=profile'); setUserMenuOpen(false); }}
+                  className="w-full flex items-center gap-[10px] px-[10px] py-[9px] rounded-[10px] text-[13px] text-[#4a5568] font-medium border-none cursor-pointer bg-transparent hover:bg-[#eef1f8] hover:text-[#384e85] transition text-left"
+                >
+                  <User className="w-4 h-4 shrink-0" />
+                  Profile
+                </button>
+                <button
+                  onClick={() => { navigate('/settings?tab=security'); setUserMenuOpen(false); }}
+                  className="w-full flex items-center gap-[10px] px-[10px] py-[9px] rounded-[10px] text-[13px] text-[#4a5568] font-medium border-none cursor-pointer bg-transparent hover:bg-[#eef1f8] hover:text-[#384e85] transition text-left"
+                >
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  Security
+                </button>
+                <button
+                  onClick={() => { navigate('/settings?tab=appearance'); setUserMenuOpen(false); }}
+                  className="w-full flex items-center gap-[10px] px-[10px] py-[9px] rounded-[10px] text-[13px] text-[#4a5568] font-medium border-none cursor-pointer bg-transparent hover:bg-[#eef1f8] hover:text-[#384e85] transition text-left"
+                >
+                  <Settings className="w-4 h-4 shrink-0" />
+                  Preferences
+                </button>
+              </div>
+
+              {/* Sign Out */}
+              <div className="p-[6px]" style={{ borderTop: '1px solid rgba(56,78,133,0.07)' }}>
+                <button
+                  onClick={() => setUserMenuOpen(false)}
+                  className="w-full flex items-center gap-[10px] px-[10px] py-[9px] rounded-[10px] text-[13px] text-[#ef4444] font-medium border-none cursor-pointer bg-transparent hover:bg-[#fef2f2] transition text-left"
+                >
+                  <LogOut className="w-4 h-4 shrink-0" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Live Pill Indicator */}

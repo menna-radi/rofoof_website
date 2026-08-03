@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   User,
   Building2,
@@ -21,11 +21,26 @@ import {
   Monitor,
   Palette,
 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 type TabId = 'profile' | 'business' | 'notifications' | 'delivery' | 'security' | 'appearance';
 
 export const SettingsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabId>('profile');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    const tab = searchParams.get('tab') as TabId | null;
+    const validTabs: TabId[] = ['profile', 'business', 'notifications', 'delivery', 'security', 'appearance'];
+    return tab && validTabs.includes(tab) ? tab : 'profile';
+  });
+
+  // Sync activeTab when searchParams change (e.g. clicking Preferences from header dropdown)
+  useEffect(() => {
+    const tab = searchParams.get('tab') as TabId | null;
+    const validTabs: TabId[] = ['profile', 'business', 'notifications', 'delivery', 'security', 'appearance'];
+    if (tab && validTabs.includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   // Profile State
@@ -123,7 +138,10 @@ export const SettingsPage: React.FC = () => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setSearchParams({ tab: tab.id });
+                  }}
                   className="w-full flex items-center gap-[9px] px-[11px] py-[9px] rounded-[10px] border-none cursor-pointer text-left transition-all"
                   style={{
                     height: 37.5,

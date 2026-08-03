@@ -292,11 +292,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <button
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate('/settings?tab=profile')}
             className="w-full h-[30.5px] px-[6px] rounded-[8px] border border-[#384E85]/13 bg-white text-[#7A8299] text-[11px] font-semibold flex items-center justify-center gap-[5px] cursor-pointer hover:bg-[#EEF1F8] hover:text-[#384E85] transition"
           >
             <User className="w-3 h-3" />
-            <span>{t('common.accountSettings')}</span>
+            <span>Profile Settings</span>
           </button>
         </div>
       </div>
