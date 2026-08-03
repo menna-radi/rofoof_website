@@ -627,21 +627,21 @@ export const DashboardPage: React.FC = () => {
 
             {/* Action Buttons with icons */}
             <div className="space-y-2 pt-2 border-t border-[#F3F4F6]">
-              <button onClick={() => navigate('/dispatch-board')} className="w-full h-8 px-3 bg-[#EEF1F8] hover:bg-[#E2E7F3] text-[#384E85] text-[11.5px] font-bold rounded-[10px] flex items-center justify-between cursor-pointer transition border-none">
+              <button onClick={() => navigate('/dispatch-board?tab=queue')} className="w-full h-8 px-3 bg-[#EEF1F8] hover:bg-[#E2E7F3] text-[#384E85] text-[11.5px] font-bold rounded-[10px] flex items-center justify-between cursor-pointer transition border-none">
                 <div className="flex items-center gap-2">
                   <UserCheck className="w-3.5 h-3.5" />
                   <span>Assign Driver</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-              <button onClick={() => navigate('/dispatch-board')} className="w-full h-8 px-3 bg-[#FFFBEB] hover:bg-[#FEF3C7] text-[#D97706] text-[11.5px] font-bold rounded-[10px] flex items-center justify-between cursor-pointer transition border-none">
+              <button onClick={() => navigate('/dispatch-board?tab=rejected')} className="w-full h-8 px-3 bg-[#FFFBEB] hover:bg-[#FEF3C7] text-[#D97706] text-[11.5px] font-bold rounded-[10px] flex items-center justify-between cursor-pointer transition border-none">
                 <div className="flex items-center gap-2">
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Reassign Driver</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-              <button onClick={() => navigate('/dispatch-board')} className="w-full h-8 px-3 bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#10B981] text-[11.5px] font-bold rounded-[10px] flex items-center justify-between cursor-pointer transition border-none">
+              <button onClick={() => navigate('/dispatch-board?tab=queue')} className="w-full h-8 px-3 bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#10B981] text-[11.5px] font-bold rounded-[10px] flex items-center justify-between cursor-pointer transition border-none">
                 <div className="flex items-center gap-2">
                   <ListOrdered className="w-3.5 h-3.5" />
                   <span>View Dispatch Queue</span>

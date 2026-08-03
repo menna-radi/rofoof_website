@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Clock, 
   CheckCircle2, 
@@ -46,16 +47,44 @@ interface RosterDriver {
 }
 
 export const DispatchBoardPage: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') || 'all';
+
+  const [activeTab, setActiveTab] = useState<'all' | 'queue' | 'assigned' | 'rejected'>('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>('8831');
   const [rosterFilter, setRosterFilter] = useState<'available' | 'all'>('available');
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (tabParam === 'queue') {
+      setActiveTab('queue');
+    } else if (tabParam === 'assigned') {
+      setActiveTab('assigned');
+    } else if (tabParam === 'rejected') {
+      setActiveTab('rejected');
+    } else {
+      setActiveTab('all');
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: 'all' | 'queue' | 'assigned' | 'rejected') => {
+    setActiveTab(tab);
+    if (tab === 'all') {
+      searchParams.delete('tab');
+      setSearchParams(searchParams);
+    } else {
+      setSearchParams({ tab });
+    }
+  };
 
   const [orders, setOrders] = useState<QueueOrder[]>([
     { id: '8831', customer: 'Metro Grocers Ltd', type: 'wholesale', amount: '2840 EGP', location: '14 Corniche Rd, Alexandria', items: 180, time: '10:15', status: 'Awaiting' },
     { id: '8830', customer: 'Emma Collins', type: 'retail', amount: '76 EGP', location: '28 Garden City St, Cairo', items: 7, time: '10:22', status: 'Awaiting' },
     { id: '8828', customer: 'Layla Hassan', type: 'retail', amount: '142 EGP', location: '12 Nasr City, Cairo', items: 11, time: '09:30', status: 'Driver Rejected', waitTime: '43m wait', rejectedBy: 'James Roberts' },
+    { id: '8827', customer: 'Youssef Mansour', type: 'wholesale', amount: '520 EGP', location: 'Smouha, Alexandria', items: 34, time: '08:50', status: 'Assigned', driver: { name: 'Maria Santos', initials: 'MS' } },
     { id: '8826', customer: 'Omar Khalid', type: 'retail', amount: '59 EGP', location: 'Maadi, Cairo', items: 5, time: '10:34', status: 'Awaiting' },
     { id: '8825', customer: 'FreshMart Branch 4', type: 'wholesale', amount: '1640 EGP', location: 'Sheikh Zayed, Giza', items: 98, time: '10:40', status: 'Awaiting' },
+    { id: '8824', customer: 'Nour El-Din', type: 'retail', amount: '210 EGP', location: 'Heliopolis, Cairo', items: 14, time: '10:45', status: 'Awaiting' },
   ]);
 
   const allDrivers: RosterDriver[] = [
@@ -70,6 +99,17 @@ export const DispatchBoardPage: React.FC = () => {
   const filteredDrivers = rosterFilter === 'available'
     ? allDrivers.filter(d => d.status === 'Available')
     : allDrivers;
+
+  const awaitingCount = orders.filter(o => o.status === 'Awaiting').length;
+  const assignedCount = orders.filter(o => o.status === 'Assigned').length;
+  const rejectedCount = orders.filter(o => o.status === 'Driver Rejected').length;
+
+  const filteredOrders = orders.filter(o => {
+    if (activeTab === 'queue') return o.status === 'Awaiting';
+    if (activeTab === 'assigned') return o.status === 'Assigned';
+    if (activeTab === 'rejected') return o.status === 'Driver Rejected';
+    return true;
+  });
 
   const selectedOrder = orders.find(o => o.id === selectedOrderId);
 
@@ -95,10 +135,6 @@ export const DispatchBoardPage: React.FC = () => {
     setSuccessBanner(null);
   };
 
-  const awaitingCount = orders.filter(o => o.status === 'Awaiting').length;
-  const assignedCount = orders.filter(o => o.status === 'Assigned').length;
-  const rejectedCount = orders.filter(o => o.status === 'Driver Rejected').length;
-
   return (
     <div className="space-y-5 select-none pb-8">
       {/* Header */}
@@ -113,7 +149,10 @@ export const DispatchBoardPage: React.FC = () => {
 
       {/* 6 Stat KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        <Card className="p-3.5 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3">
+        <Card 
+          onClick={() => handleTabChange('queue')}
+          className={`p-3.5 bg-white border rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3 cursor-pointer transition ${activeTab === 'queue' ? 'border-[#D97706] ring-1 ring-[#D97706]/30' : 'border-[#384E85]/7 hover:border-[#384E85]/20'}`}
+        >
           <div className="w-8 h-8 rounded-[9px] bg-[#FFFBEB] text-[#D97706] flex items-center justify-center font-bold shrink-0">
             <Clock className="w-4 h-4" />
           </div>
@@ -127,13 +166,16 @@ export const DispatchBoardPage: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="p-3.5 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3">
+        <Card 
+          onClick={() => handleTabChange('assigned')}
+          className={`p-3.5 bg-white border rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3 cursor-pointer transition ${activeTab === 'assigned' ? 'border-[#384E85] ring-1 ring-[#384E85]/30' : 'border-[#384E85]/7 hover:border-[#384E85]/20'}`}
+        >
           <div className="w-8 h-8 rounded-[9px] bg-[#EEF1F8] text-[#384E85] flex items-center justify-center font-bold shrink-0">
             <CheckCircle2 className="w-4 h-4" />
           </div>
           <div>
             <div className="text-[18px] font-extrabold text-[#0F1629] leading-none mb-1">
-              {assignedCount || 1}
+              {assignedCount}
             </div>
             <div className="text-[10px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">
               Assigned Orders
@@ -141,7 +183,10 @@ export const DispatchBoardPage: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="p-3.5 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3">
+        <Card 
+          onClick={() => handleTabChange('rejected')}
+          className={`p-3.5 bg-white border rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3 cursor-pointer transition ${activeTab === 'rejected' ? 'border-[#EF4444] ring-1 ring-[#EF4444]/30' : 'border-[#384E85]/7 hover:border-[#384E85]/20'}`}
+        >
           <div className="w-8 h-8 rounded-[9px] bg-[#FEF2F2] text-[#EF4444] flex items-center justify-center font-bold shrink-0">
             <XCircle className="w-4 h-4" />
           </div>
@@ -249,23 +294,54 @@ export const DispatchBoardPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
         {/* Left Column: Order Queue */}
         <Card className="p-5 bg-white border border-[#384E85]/7 rounded-[20px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex flex-col h-full space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-[#F3F4F6] shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#F3F4F6] shrink-0">
             <div>
               <h3 className="text-[14px] font-bold text-[#0F1629]">Order Queue</h3>
-              <p className="text-[11.5px] text-[#7A8299]">7 orders · 5 need action</p>
+              <p className="text-[11.5px] text-[#7A8299]">{orders.length} orders · {awaitingCount + rejectedCount} need action</p>
             </div>
-            <div className="flex gap-1.5">
-              <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FFFBEB] text-[#F59E0B]">
-                {awaitingCount} unassigned
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FEF2F2] text-[#EF4444]">
-                {rejectedCount} rejected
-              </span>
+            <div className="bg-[#F4F5F8] p-1 rounded-[10px] flex gap-1 flex-wrap">
+              <button
+                onClick={() => handleTabChange('all')}
+                className={`px-2.5 py-1 rounded-[8px] text-[11px] font-semibold transition cursor-pointer border-none ${
+                  activeTab === 'all' ? 'bg-[#384E85] text-white shadow-xs' : 'text-[#7A8299]'
+                }`}
+              >
+                All ({orders.length})
+              </button>
+              <button
+                onClick={() => handleTabChange('queue')}
+                className={`px-2.5 py-1 rounded-[8px] text-[11px] font-semibold transition cursor-pointer border-none ${
+                  activeTab === 'queue' ? 'bg-[#384E85] text-white shadow-xs' : 'text-[#7A8299]'
+                }`}
+              >
+                Queue ({awaitingCount})
+              </button>
+              <button
+                onClick={() => handleTabChange('assigned')}
+                className={`px-2.5 py-1 rounded-[8px] text-[11px] font-semibold transition cursor-pointer border-none ${
+                  activeTab === 'assigned' ? 'bg-[#384E85] text-white shadow-xs' : 'text-[#7A8299]'
+                }`}
+              >
+                Assigned ({assignedCount})
+              </button>
+              <button
+                onClick={() => handleTabChange('rejected')}
+                className={`px-2.5 py-1 rounded-[8px] text-[11px] font-semibold transition cursor-pointer border-none ${
+                  activeTab === 'rejected' ? 'bg-[#384E85] text-white shadow-xs' : 'text-[#7A8299]'
+                }`}
+              >
+                Rejected ({rejectedCount})
+              </button>
             </div>
           </div>
 
           <div className="space-y-3 flex-1 overflow-y-auto max-h-[560px] pr-1">
-            {orders.map((o) => {
+            {filteredOrders.length === 0 ? (
+              <div className="text-center py-10 text-[13px] text-[#7A8299]">
+                No orders match the selected queue filter.
+              </div>
+            ) : (
+              filteredOrders.map((o) => {
               const isSelected = selectedOrderId === o.id;
               const isRejected = o.status === 'Driver Rejected';
               const isAssigned = o.status === 'Assigned';
@@ -350,7 +426,7 @@ export const DispatchBoardPage: React.FC = () => {
                   )}
                 </div>
               );
-            })}
+            }))}
           </div>
         </Card>
 
