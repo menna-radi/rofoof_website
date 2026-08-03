@@ -16,7 +16,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
     if (path.startsWith('/orders')) return t('nav.orders');
     if (path.startsWith('/products')) return t('nav.products');
     if (path.startsWith('/categories')) return t('nav.categories');
-    if (path.startsWith('/stock-overview')) return t('nav.inventory');
+    if (path.startsWith('/stock-overview')) return t('nav.stockOverview');
+    if (path.startsWith('/inventory')) return t('nav.inventory');
     if (path.startsWith('/customers')) return t('nav.customers');
     if (path.startsWith('/drivers')) return t('nav.driverFleet');
     if (path.startsWith('/live-tracking')) return t('nav.liveTracking');

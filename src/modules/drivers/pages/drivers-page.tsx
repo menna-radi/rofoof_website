@@ -4,13 +4,13 @@ import {
   Search, 
   Phone, 
   Star, 
-  Truck, 
   Edit3, 
   RefreshCw, 
-  CheckCircle2, 
   Trash2, 
   Download,
-  AlertTriangle
+  Eye,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
@@ -37,6 +37,7 @@ interface Driver {
 export const DriversPage: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'online' | 'busy' | 'offline' | 'suspended'>('all');
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isAddDriverOpen, setIsAddDriverOpen] = useState(false);
 
   const [drivers, setDrivers] = useState<Driver[]>([
@@ -45,7 +46,7 @@ export const DriversPage: React.FC = () => {
     { id: '3', name: 'James Roberts', handle: '@james.roberts', initials: 'JR', phone: '+20 102 456 7890', nationalId: '27834567800034', vehicleType: 'Motorcycle', vehicleIcon: '🏍️', licensePlate: 'GHI-9012', status: 'Busy', rating: 4.6, totalTrips: 2156, activeOrders: 4, earnings: '98.30 EGP', avatarBg: 'from-[#D97706] to-[#F59E0B]' },
     { id: '4', name: 'Reza Moradi', handle: '@reza.moradi', initials: 'RM', phone: '+20 103 234 5670', nationalId: '29145678900045', vehicleType: 'Car', vehicleIcon: '🚗', licensePlate: 'JKL-3456', status: 'Online', rating: 5.0, totalTrips: 987, activeOrders: 5, earnings: '212.80 EGP', avatarBg: 'from-[#7C3AED] to-[#8B5CF6]' },
     { id: '5', name: 'Tom Wilson', handle: '@tom.wilson', initials: 'TW', phone: '+20 104 678 9012', nationalId: '29256789000056', vehicleType: 'Motorcycle', vehicleIcon: '🏍️', licensePlate: 'MNO-7890', status: 'Online', rating: 4.7, totalTrips: 763, activeOrders: 2, earnings: '128.60 EGP', avatarBg: 'from-[#0891B2] to-[#06B6D4]' },
-    { id: '6', name: 'Lisa Park', handle: '@lisa.park', initials: 'LP', phone: '+20 105 890 1234', nationalId: '29367899100067', vehicleType: 'Bicycle', vehicleIcon: '🚲', licensePlate: 'PQR-6123', status: 'Offline', rating: 4.5, totalTrips: 521, activeOrders: 0, earnings: '0.00 EGP', avatarBg: 'from-gray-500 to-gray-600' },
+    { id: '6', name: 'Lisa Park', handle: '@lisa.park', initials: 'LP', phone: '+20 105 890 1234', nationalId: '29367899100067', vehicleType: 'Bicycle', vehicleIcon: '🚲', licensePlate: 'PQR-0123', status: 'Offline', rating: 4.5, totalTrips: 521, activeOrders: 0, earnings: '0.00 EGP', avatarBg: 'from-gray-500 to-gray-600' },
     { id: '7', name: 'Omar Farooq', handle: '@omar.farooq', initials: 'OF', phone: '+20 106 901 2345', nationalId: '29478901200078', vehicleType: 'Motorcycle', vehicleIcon: '🏍️', licensePlate: 'STU-4567', status: 'Suspended', rating: 4.2, totalTrips: 310, activeOrders: 0, earnings: '0.00 EGP', avatarBg: 'from-[#EF4444] to-[#DC2626]' },
   ]);
 
@@ -72,65 +73,101 @@ export const DriversPage: React.FC = () => {
     }
   };
 
+  const handleToggleStatus = (id: string) => {
+    setDrivers(prev => prev.map(d => {
+      if (d.id !== id) return d;
+      const statusMap: Record<string, Driver['status']> = {
+        'Online': 'Busy',
+        'Busy': 'Offline',
+        'Offline': 'Online',
+        'Suspended': 'Online'
+      };
+      return { ...d, status: statusMap[d.status] };
+    }));
+  };
+
   return (
-    <div className="space-y-6 select-none pb-10">
+    <div className="space-y-5 select-none pb-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-extrabold text-[#0F1629] tracking-tight">Driver Fleet Management</h1>
-          <p className="text-[13px] text-[#7A8299] mt-0.5">{drivers.length} total drivers · <span className="font-semibold text-[#10B981]">{onlineCount} online live</span></p>
+          <h1 className="text-[20px] font-bold text-[#0F1629] tracking-tight">
+            Driver Management
+          </h1>
+          <p className="text-[12px] text-[#7A8299] mt-0.5">
+            {drivers.length} drivers · <span className="font-bold text-[#10B981]">{onlineCount} online now</span>
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
-            Export Data
-          </Button>
-          <button 
-            onClick={() => setIsAddDriverOpen(true)}
-            className="h-[38px] px-4 rounded-[12px] bg-gradient-to-r from-[#384E85] to-[#2A3A65] text-white text-[13px] font-bold flex items-center gap-2 shadow-[0px_4px_14px_rgba(56,78,133,0.3)] hover:opacity-95 transition cursor-pointer border-none"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Add Driver</span>
-          </button>
-        </div>
+        <button 
+          onClick={() => setIsAddDriverOpen(true)}
+          className="h-[36px] px-4 rounded-[12px] bg-gradient-to-r from-[#384E85] to-[#2A3A65] text-white text-[13px] font-bold flex items-center gap-2 shadow-xs hover:opacity-95 transition cursor-pointer border-none"
+        >
+          <UserPlus className="w-4 h-4 text-white" />
+          <span>Add Driver</span>
+        </button>
       </div>
 
-      {/* 4 Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="p-4 bg-white border border-[#384E85]/8 rounded-[16px] shadow-xs flex items-center gap-3">
-          <span className="w-3 h-3 rounded-full bg-[#10B981] animate-pulse" />
+      {/* 4 Stat Cards Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+        <Card className="p-4 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-[10px] bg-[#ECFDF5] flex items-center justify-center shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
+          </div>
           <div>
-            <div className="text-[22px] font-extrabold text-[#0F1629]">{onlineCount}</div>
-            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">Online</div>
+            <div className="text-[20px] font-extrabold text-[#0F1629] leading-none mb-1">
+              {onlineCount}
+            </div>
+            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">
+              Online
+            </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-white border border-[#384E85]/8 rounded-[16px] shadow-xs flex items-center gap-3">
-          <span className="w-3 h-3 rounded-full bg-[#F59E0B]" />
+        <Card className="p-4 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-[10px] bg-[#FFFBEB] flex items-center justify-center shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+          </div>
           <div>
-            <div className="text-[22px] font-extrabold text-[#0F1629]">{busyCount}</div>
-            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">Busy</div>
+            <div className="text-[20px] font-extrabold text-[#0F1629] leading-none mb-1">
+              {busyCount}
+            </div>
+            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">
+              Busy
+            </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-white border border-[#384E85]/8 rounded-[16px] shadow-xs flex items-center gap-3">
-          <span className="w-3 h-3 rounded-full bg-[#94A3B8]" />
+        <Card className="p-4 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-[10px] bg-[#F1F5F9] flex items-center justify-center shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#94A3B8]" />
+          </div>
           <div>
-            <div className="text-[22px] font-extrabold text-[#0F1629]">{offlineCount}</div>
-            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">Offline</div>
+            <div className="text-[20px] font-extrabold text-[#0F1629] leading-none mb-1">
+              {offlineCount}
+            </div>
+            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">
+              Offline
+            </div>
           </div>
         </Card>
 
-        <Card className="p-4 bg-white border border-[#384E85]/8 rounded-[16px] shadow-xs flex items-center gap-3">
-          <span className="w-3 h-3 rounded-full bg-[#EF4444]" />
+        <Card className="p-4 bg-white border border-[#384E85]/7 rounded-[16px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)] flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-[10px] bg-[#FEF2F2] flex items-center justify-center shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
+          </div>
           <div>
-            <div className="text-[22px] font-extrabold text-[#0F1629]">{suspendedCount}</div>
-            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">Suspended</div>
+            <div className="text-[20px] font-extrabold text-[#0F1629] leading-none mb-1">
+              {suspendedCount}
+            </div>
+            <div className="text-[11px] font-semibold text-[#7A8299] uppercase tracking-[0.5px]">
+              Suspended
+            </div>
           </div>
         </Card>
       </div>
 
       {/* Main Table Card */}
-      <Card className="p-0 overflow-hidden bg-white border border-[#384E85]/8 rounded-[20px] shadow-[0px_8px_30px_rgba(0,0,0,0.06)] space-y-4">
+      <Card className="p-0 overflow-hidden bg-white border border-[#384E85]/7 rounded-[20px] shadow-[0px_8px_15px_rgba(0,0,0,0.06)]">
         {/* Controls Bar */}
         <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#384E85]/8">
           <div className="relative flex-1 max-w-md">
@@ -140,7 +177,7 @@ export const DriversPage: React.FC = () => {
               placeholder="Search by name, phone, or national ID..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-9 pl-8 pr-3 bg-[#F4F5F8] border border-transparent rounded-[10px] text-[12.5px] text-[#0F1629] outline-none"
+              className="w-full h-9 pl-9 pr-3 bg-[#F4F5F8] border border-transparent rounded-[10px] text-[12.5px] text-[#0F1629] outline-none placeholder:text-[#7A8299] focus:border-[#384E85] focus:bg-white transition"
             />
           </div>
 
@@ -189,7 +226,7 @@ export const DriversPage: React.FC = () => {
                     </div>
                   </td>
                   <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-1 text-[12px] font-semibold text-[#0F1629]">
+                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#0F1629]">
                       <Phone className="w-3 h-3 text-[#7A8299]" /> {d.phone}
                     </div>
                     <div className="text-[10.5px] font-mono text-[#7A8299] mt-0.5">{d.nationalId}</div>
@@ -207,28 +244,45 @@ export const DriversPage: React.FC = () => {
                     <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                       d.status === 'Online' ? 'bg-[#ECFDF5] text-[#10B981]' :
                       d.status === 'Busy' ? 'bg-[#FFFBEB] text-[#D97706]' :
-                      d.status === 'Offline' ? 'bg-gray-100 text-gray-500' : 'bg-[#FEF2F2] text-[#EF4444]'
+                      d.status === 'Offline' ? 'bg-[#F1F5F9] text-[#64748B]' : 'bg-[#FEF2F2] text-[#EF4444]'
                     }`}>
-                      ● {d.status}
+                      {d.status}
                     </span>
                   </td>
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-1 font-bold text-[#0F1629]">
                       <Star className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" /> {d.rating}
                     </div>
-                    <div className="text-[10px] text-[#7A8299]">{d.totalTrips} trips</div>
+                    <div className="text-[10px] text-[#7A8299]">{d.totalTrips.toLocaleString()} total</div>
                   </td>
                   <td className="py-3.5 px-4 text-center font-extrabold text-[#384E85]">{d.activeOrders}</td>
                   <td className="py-3.5 px-4 font-bold text-[#065F46]">{d.earnings}</td>
                   <td className="py-3.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button className="w-7 h-7 rounded-[7px] bg-[#EEF1F8] hover:bg-[#E2E7F3] text-[#384E85] flex items-center justify-center cursor-pointer transition border-none">
+                      <button 
+                        title="View Details"
+                        className="w-7 h-7 rounded-[7px] bg-[#F4F5F8] hover:bg-[#E2E8F0] text-[#4A5568] flex items-center justify-center cursor-pointer transition border-none"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+                      <button 
+                        title="Edit Driver"
+                        className="w-7 h-7 rounded-[7px] bg-[#EEF1F8] hover:bg-[#E2E7F3] text-[#384E85] flex items-center justify-center cursor-pointer transition border-none"
+                      >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
-                      <button className="w-7 h-7 rounded-[7px] bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#10B981] flex items-center justify-center cursor-pointer transition border-none">
+                      <button 
+                        title="Toggle Status"
+                        onClick={() => handleToggleStatus(d.id)}
+                        className="w-7 h-7 rounded-[7px] bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#10B981] flex items-center justify-center cursor-pointer transition border-none"
+                      >
                         <RefreshCw className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => handleDelete(d.id)} className="w-7 h-7 rounded-[7px] bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#EF4444] flex items-center justify-center cursor-pointer transition border-none">
+                      <button 
+                        title="Delete Driver"
+                        onClick={() => handleDelete(d.id)}
+                        className="w-7 h-7 rounded-[7px] bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#EF4444] flex items-center justify-center cursor-pointer transition border-none"
+                      >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -238,8 +292,60 @@ export const DriversPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Table Footer / Pagination */}
+        <div className="p-4 bg-[#FAFAFA] border-t border-[#384E85]/8 flex items-center justify-between text-[12px] text-[#7A8299]">
+          <div>
+            Showing 1–{filteredDrivers.length} of {drivers.length}
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              className="w-8 h-8 rounded-[8px] border border-[#384E85]/10 flex items-center justify-center text-[#7A8299] hover:bg-white transition cursor-pointer disabled:opacity-40"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentPage(1)}
+              className={`w-8 h-8 rounded-[8px] text-[12px] font-bold flex items-center justify-center cursor-pointer transition border-none ${
+                currentPage === 1 ? 'bg-[#384E85] text-white shadow-xs' : 'bg-white text-[#4A5568] border border-[#384E85]/10'
+              }`}
+            >
+              1
+            </button>
+            <button
+              onClick={() => setCurrentPage(2)}
+              className={`w-8 h-8 rounded-[8px] text-[12px] font-bold flex items-center justify-center cursor-pointer transition border-none ${
+                currentPage === 2 ? 'bg-[#384E85] text-white shadow-xs' : 'bg-white text-[#4A5568] border border-[#384E85]/10'
+              }`}
+            >
+              2
+            </button>
+            <button
+              onClick={() => setCurrentPage(p => p + 1)}
+              className="w-8 h-8 rounded-[8px] border border-[#384E85]/10 flex items-center justify-center text-[#7A8299] hover:bg-white transition cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </Card>
-      {/* Add Driver Modal (Figma Design 1:17760) */}
+
+      {/* Export Data Button */}
+      <div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-[#F4F5F8] border-none text-[#4A5568] hover:bg-[#E2E8F0] rounded-[12px] px-3.5 py-2 text-[13px] font-medium"
+          leftIcon={<Download className="w-3.5 h-3.5" />}
+        >
+          Export Data
+        </Button>
+      </div>
+
+      {/* Add Driver Modal */}
       <AddDriverModal
         isOpen={isAddDriverOpen}
         onClose={() => setIsAddDriverOpen(false)}
