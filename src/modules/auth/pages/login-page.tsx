@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LogIn, ShieldCheck } from 'lucide-react';
+import { LogIn, ShieldCheck, Layers } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { LanguageSwitcher } from '@/shared/components/navigation/language-switcher';
 
@@ -39,9 +39,14 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <div className="w-full max-w-[420px]">
-          {/* Logo Header */}
+          {/* Logo Header (Matching Figma) */}
           <div className="flex items-center gap-3 mb-10">
-            <img src="/img/logo.png" alt="Rofof" className="w-[44px] h-[44px] rounded-[12px] object-contain" />
+            <div
+              className="w-[44px] h-[44px] rounded-[12px] flex items-center justify-center shrink-0 shadow-xs"
+              style={{ background: 'linear-gradient(135deg, rgb(56, 78, 133) 0%, rgb(91, 123, 200) 100%)' }}
+            >
+              <Layers className="w-6 h-6 text-white stroke-[2.2]" />
+            </div>
             <div>
               <div className="text-[22px] font-bold text-[#0F1629] tracking-[-0.5px] leading-none">Rofof</div>
               <div className="text-[11px] text-[#7A8299] mt-0.5">Grocery &amp; Delivery</div>

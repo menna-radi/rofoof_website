@@ -17,7 +17,8 @@ import {
   Megaphone,
   UserCheck, 
   User,
-  Clock as ClockIcon
+  Clock as ClockIcon,
+  Layers
 } from 'lucide-react';
 import { cn } from '@/core/utils/cn';
 
@@ -142,12 +143,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className="w-[252px] min-w-[252px] h-screen bg-white border-r border-[#384E85]/8 shadow-[2px_0px_20px_rgba(0,0,0,0.04)] flex flex-col sticky top-0 z-30 select-none overflow-y-auto overflow-x-hidden">
-      {/* Sidebar Logo */}
-      <div className="flex items-center gap-2.5 px-[18px] pt-[20px] pb-[16px] min-h-[73px] border-b border-[#384E85]/8">
-        <img src="/img/logo.png" alt="Rofof" className="w-[36px] h-[36px] object-contain rounded-[10px]" />
+      {/* Sidebar Logo (Exact Figma Image 1:1 Match) */}
+      <div className="flex items-center gap-[10px] px-[18px] pt-[20px] pb-[17px] min-h-[73px] border-b border-[#384E85]/8">
+        <div
+          className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center shrink-0 shadow-xs"
+          style={{ background: 'linear-gradient(135deg, rgb(56, 78, 133) 0%, rgb(91, 123, 200) 100%)' }}
+        >
+          <Layers className="w-5 h-5 text-white stroke-[2.2]" />
+        </div>
         <div>
-          <div className="text-[14px] font-bold text-[#0F1629] tracking-tight leading-none">Rofof</div>
-          <div className="text-[10px] font-medium text-[#7A8299] mt-[2px]">Grocery &amp; Delivery</div>
+          <div className="text-[14px] font-bold text-[#0F1629] tracking-[-0.3px] leading-[21px]">Rofof</div>
+          <div className="text-[10px] font-medium text-[#7A8299] leading-[15px]">Grocery &amp; Delivery</div>
         </div>
       </div>
 
