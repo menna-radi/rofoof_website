@@ -18,7 +18,9 @@ import {
   UserCheck, 
   User,
   Clock as ClockIcon,
-  Layers
+  Layers,
+  ShoppingCart,
+  Store
 } from 'lucide-react';
 import { cn } from '@/core/utils/cn';
 
@@ -47,13 +49,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'orders',
       label: t('nav.orders'),
-      icon: ShoppingBag,
+      icon: ShoppingCart,
       href: '/orders',
       children: [
-        { id: 'all-orders', label: t('nav.allOrders'), href: '/orders' },
-        { id: 'active-orders', label: t('nav.activeOrders'), href: '/orders?tab=active', badge: '184', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
-        { id: 'delivered', label: t('nav.delivered'), href: '/orders?tab=delivered' },
-        { id: 'cancelled', label: t('nav.cancelled'), href: '/orders?tab=cancelled' }
+        { id: 'all-orders', label: 'All Orders', href: '/orders' },
+        { id: 'active-orders', label: 'Active Orders', href: '/orders?tab=active', badge: '184', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
+        { id: 'pending-orders', label: 'Pending', href: '/orders?tab=pending', badge: '7', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
+        { id: 'delivered', label: 'Delivered', href: '/orders?tab=delivered' },
+        { id: 'cancelled', label: 'Cancelled', href: '/orders?tab=cancelled' }
       ]
     },
     {
@@ -62,19 +65,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Package,
       href: '/products',
       children: [
-        { id: 'product-list', label: t('nav.productList'), href: '/products' },
-        { id: 'categories', label: t('nav.categories'), href: '/categories' }
+        { id: 'product-list', label: 'Product List', href: '/products' },
+        { id: 'categories', label: 'Categories', href: '/categories' }
       ]
     },
     {
       id: 'inventory',
       label: t('nav.inventory'),
-      icon: Boxes,
+      icon: Store,
       href: '/stock-overview',
       children: [
-        { id: 'stock-overview', label: t('nav.stockOverview'), href: '/stock-overview' },
-        { id: 'low-stock', label: t('nav.lowStock'), href: '/stock-overview?tab=low', badge: '12', badgeClass: 'bg-[#FFFBEB] text-[#D97706]' },
-        { id: 'out-of-stock', label: t('nav.outOfStock'), href: '/stock-overview?tab=out', badge: '3', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' }
+        { id: 'stock-overview', label: 'Stock Overview', href: '/stock-overview' },
+        { id: 'low-stock', label: 'Low Stock', href: '/stock-overview?tab=low', badge: '12', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
+        { id: 'out-of-stock', label: 'Out of Stock', href: '/stock-overview?tab=out', badge: '3', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' }
       ]
     },
     {
@@ -83,7 +86,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Users,
       href: '/customers',
       children: [
-        { id: 'customer-accounts', label: t('nav.customerAccounts'), href: '/customers' }
+        { id: 'retail-customers', label: 'Retail Customers', href: '/customers' },
+        { id: 'wholesale-accounts', label: 'Wholesale Accounts', href: '/customers?tab=wholesale' },
+        { id: 'loyalty-program', label: 'Loyalty Program', href: '/customers?tab=loyalty' }
       ]
     },
     {
@@ -92,8 +97,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Truck,
       href: '/drivers',
       children: [
-        { id: 'driver-fleet', label: t('nav.driverFleet'), href: '/drivers' },
-        { id: 'live-tracking', label: t('nav.liveTracking'), href: '/live-tracking' }
+        { id: 'driver-fleet', label: 'Driver Fleet', href: '/drivers' },
+        { id: 'live-tracking', label: 'Live Tracking', href: '/live-tracking' }
       ]
     },
     {
@@ -102,8 +107,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Clock,
       href: '/dispatch-board',
       children: [
-        { id: 'dispatch-board', label: t('nav.dispatchBoard'), href: '/dispatch-board' },
-        { id: 'assignment-queue', label: t('nav.assignmentQueue'), href: '/dispatch-board?tab=queue', badge: '7', badgeClass: 'bg-[#ECFDF5] text-[#10B981]' }
+        { id: 'dispatch-board', label: 'Dispatch Board', href: '/dispatch-board' },
+        { id: 'assignment-queue', label: 'Assignment Queue', href: '/dispatch-board?tab=queue', badge: '7', badgeClass: 'bg-[#ECFDF5] text-[#10B981]' }
       ]
     },
     {
@@ -112,8 +117,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Megaphone,
       href: '/marketing/offers',
       children: [
-        { id: 'offers-deals', label: t('nav.offersDeals'), href: '/marketing/offers' },
-        { id: 'push-notifications', label: t('nav.pushNotifications'), href: '/marketing/notifications' }
+        { id: 'offers-deals', label: 'Offers & Deals', href: '/marketing/offers' },
+        { id: 'push-notifications', label: 'Push Notifications', href: '/marketing/notifications' }
       ]
     },
     { id: 'analytics', label: t('nav.analytics'), icon: PieChart, href: '/analytics' },
