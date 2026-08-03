@@ -16,7 +16,8 @@ import {
   Printer,
   Eye,
   Trash2,
-  Check
+  Check,
+  X
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
@@ -375,15 +376,23 @@ export const OrdersPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="w-[180px] relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#7A8299]" />
+          <div className="w-[240px] relative">
+            <Search className={`w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${search ? 'text-[#384E85]' : 'text-[#7A8299]'}`} />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search order ID or customer..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-[34px] pl-8 pr-3 bg-[#F4F5F8] border border-transparent rounded-[9px] text-[12px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none"
+              className="w-full h-[34px] pl-8 pr-8 bg-[#F4F5F8] border border-transparent rounded-[9px] text-[12px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none focus:border-[#384E85] focus:bg-white focus:ring-2 focus:ring-[#384E85]/10 transition-all"
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#CBD5E0] hover:bg-[#A0AEC0] text-white flex items-center justify-center border-none cursor-pointer transition"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+            )}
           </div>
         </div>
 

@@ -10,7 +10,8 @@ import {
   Download,
   Eye,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
@@ -173,14 +174,22 @@ export const DriversPage: React.FC = () => {
         {/* Controls Bar */}
         <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#384E85]/8">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#7A8299]" />
+            <Search className={`w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${search ? 'text-[#384E85]' : 'text-[#7A8299]'}`} />
             <input
               type="text"
               placeholder="Search by name, phone, or national ID..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-9 pl-9 pr-3 bg-[#F4F5F8] border border-transparent rounded-[10px] text-[12.5px] text-[#0F1629] outline-none placeholder:text-[#7A8299] focus:border-[#384E85] focus:bg-white transition"
+              className="w-full h-9 pl-9 pr-8 bg-[#F4F5F8] border border-transparent rounded-[10px] text-[12.5px] text-[#0F1629] outline-none placeholder:text-[#7A8299] focus:border-[#384E85] focus:bg-white focus:ring-2 focus:ring-[#384E85]/10 transition-all"
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#CBD5E0] hover:bg-[#A0AEC0] text-white flex items-center justify-center border-none cursor-pointer transition"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+            )}
           </div>
 
           <div className="bg-[#F4F5F8] p-1 rounded-[12px] flex items-center gap-1 overflow-x-auto">

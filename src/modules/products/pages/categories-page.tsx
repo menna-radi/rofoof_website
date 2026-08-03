@@ -353,14 +353,22 @@ export const CategoriesPage: React.FC = () => {
           
           {/* Search Input */}
           <div className="relative flex-1 max-w-xl">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#7A8299]" />
+            <Search className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${search ? 'text-[#384E85]' : 'text-[#7A8299]'}`} />
             <input
               type="text"
-              placeholder="Search categories..."
+              placeholder="Search categories by name, slug, or description..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-[37.5px] pl-10 pr-3 bg-[#F4F5F8] border border-transparent rounded-[10px] text-[13px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none"
+              className="w-full h-[37.5px] pl-10 pr-9 bg-[#F4F5F8] border border-transparent rounded-[10px] text-[13px] text-[#0F1629] placeholder-[rgba(15,22,41,0.5)] outline-none focus:border-[#384E85] focus:bg-white focus:ring-2 focus:ring-[#384E85]/10 transition-all"
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#CBD5E0] hover:bg-[#A0AEC0] text-white flex items-center justify-center border-none cursor-pointer transition"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-3">

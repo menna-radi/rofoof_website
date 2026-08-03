@@ -162,14 +162,22 @@ export const ProductsPage: React.FC = () => {
           
           {/* Search Input (Left side) */}
           <div className="relative flex-1 max-w-lg">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#7A8299]" />
+            <Search className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${search ? 'text-[#384E85]' : 'text-[#7A8299]'}`} />
             <input
               type="text"
               placeholder="Search by name, SKU, or category..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-[38px] pl-10 pr-3 bg-[#F4F5F8] border border-transparent rounded-[12px] text-[13px] text-[#0F1629] placeholder-[#9CA3AF] outline-none"
+              className="w-full h-[38px] pl-10 pr-9 bg-[#F4F5F8] border border-transparent rounded-[12px] text-[13px] text-[#0F1629] placeholder-[#9CA3AF] outline-none focus:border-[#384E85] focus:bg-white focus:ring-2 focus:ring-[#384E85]/10 transition-all"
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#CBD5E0] hover:bg-[#A0AEC0] text-white flex items-center justify-center border-none cursor-pointer transition"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+            )}
           </div>
 
           {/* Plain Text Filter Tabs (Right side - Matching Screenshot Exactly) */}
