@@ -7,6 +7,8 @@ import {
   Megaphone, PieChart, Clock, Building2, ChevronRight 
 } from 'lucide-react';
 import { LanguageSwitcher } from './language-switcher';
+import { authRepository } from '@/modules/auth/data/repositories/AuthRepositoryImpl';
+import { ROUTE_PATHS } from '@/app/routes/routePaths';
 
 interface HeaderProps {
   onOpenNotifications?: () => void;
@@ -86,6 +88,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSignOut = async () => {
+    setUserMenuOpen(false);
+    await authRepository.logout();
+    navigate(ROUTE_PATHS.LOGIN, { replace: true });
+  };
 
   const getPageTitle = (path: string) => {
     if (path.startsWith('/orders')) return t('nav.orders');
@@ -192,20 +200,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
             }}
             onFocus={() => setSearchFocused(true)}
             onKeyDown={handleInputKeyDown}
-            placeholder="Search orders, products, customers, drivers... (Ctrl+K)"
-            className="w-full h-[38px] pl-[40px] pr-[70px] bg-[#F4F5F8] border border-transparent rounded-[12px] text-[13px] text-[#0F1629] outline-none placeholder:text-[#7A8299] focus:border-[#384E85] focus:bg-white focus:ring-3 focus:ring-[#384E85]/10 transition-all font-sans"
+            placeholder="Search orders, products, customers, drivers..."
+            className="w-full h-[38px] pl-[40px] pr-[36px] bg-[#F4F5F8] border border-transparent rounded-[12px] text-[13px] text-[#0F1629] outline-none placeholder:text-[#7A8299] focus:border-[#384E85] focus:bg-white focus:ring-3 focus:ring-[#384E85]/10 transition-all font-sans"
           />
-          {globalQuery ? (
+          {globalQuery && (
             <button
               onClick={() => setGlobalQuery('')}
               className="absolute right-[12px] w-5 h-5 rounded-full bg-[#CBD5E0] hover:bg-[#A0AEC0] text-white flex items-center justify-center border-none cursor-pointer transition"
             >
               <X className="w-3 h-3" />
             </button>
-          ) : (
-            <kbd className="hidden sm:flex items-center gap-0.5 absolute right-[10px] px-1.5 py-0.5 text-[10px] font-semibold text-[#7A8299] bg-white border border-[#CBD5E0] rounded-[6px] shadow-2xs pointer-events-none select-none">
-              ⌘K
-            </kbd>
           )}
         </div>
 
@@ -372,7 +376,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
               {/* Sign Out */}
               <div className="p-[6px]" style={{ borderTop: '1px solid rgba(56,78,133,0.07)' }}>
                 <button
-                  onClick={() => setUserMenuOpen(false)}
+                  onClick={handleSignOut}
                   className="w-full flex items-center gap-[10px] px-[10px] py-[9px] rounded-[10px] text-[13px] text-[#ef4444] font-medium border-none cursor-pointer bg-transparent hover:bg-[#fef2f2] transition text-left"
                 >
                   <LogOut className="w-4 h-4 shrink-0" />

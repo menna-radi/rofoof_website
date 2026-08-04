@@ -15,12 +15,15 @@ import { AnalyticsPage } from '@/modules/analytics/pages/analytics-page';
 import { SettingsPage } from '@/modules/settings/pages/settings-page';
 import { OffersDealsPage } from '@/modules/marketing/pages/offers-deals-page';
 import { PushNotificationsPage } from '@/modules/marketing/pages/push-notifications-page';
+import { tokenStorage } from '@/core/services/TokenStorageService';
+import { ROUTE_PATHS } from '@/app/routes/routePaths';
 
-// Protected Route Guard
+// Protected Route Guard — reads auth state from TokenStorageService only
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isLoggedIn = sessionStorage.getItem('rofoof_logged_in') === 'true';
-  return isLoggedIn ? <>{children}</> : <Navigate to="/login" replace />;
+  const isAuthenticated = tokenStorage.isAuthenticated();
+  return isAuthenticated ? <>{children}</> : <Navigate to={ROUTE_PATHS.LOGIN} replace />;
 };
+
 
 export const AppRouter: React.FC = () => {
   return (

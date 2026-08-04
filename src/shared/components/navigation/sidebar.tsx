@@ -20,9 +20,12 @@ import {
   Clock as ClockIcon,
   Layers,
   ShoppingCart,
-  Store
+  Store,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/core/utils/cn';
+import { authRepository } from '@/modules/auth/data/repositories/AuthRepositoryImpl';
+import { ROUTE_PATHS } from '@/app/routes/routePaths';
 
 interface SidebarProps {
   onOpenAddProduct?: () => void;
@@ -301,13 +304,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={() => navigate('/settings?tab=profile')}
-            className="w-full h-[30.5px] px-[6px] rounded-[8px] border border-[#384E85]/13 bg-white text-[#7A8299] text-[11px] font-semibold flex items-center justify-center gap-[5px] cursor-pointer hover:bg-[#EEF1F8] hover:text-[#384E85] transition"
-          >
-            <User className="w-3 h-3" />
-            <span>Profile Settings</span>
-          </button>
+          <div className="flex gap-[6px]">
+            <button
+              onClick={() => navigate('/settings?tab=profile')}
+              className="flex-1 h-[30.5px] px-[6px] rounded-[8px] border border-[#384E85]/13 bg-white text-[#7A8299] text-[11px] font-semibold flex items-center justify-center gap-[5px] cursor-pointer hover:bg-[#EEF1F8] hover:text-[#384E85] transition"
+            >
+              <User className="w-3 h-3" />
+              <span>Profile</span>
+            </button>
+            <button
+              onClick={async () => {
+                await authRepository.logout();
+                navigate(ROUTE_PATHS.LOGIN, { replace: true });
+              }}
+              className="h-[30.5px] px-[10px] rounded-[8px] border border-[#EF4444]/20 bg-[#FEF2F2] text-[#EF4444] text-[11px] font-semibold flex items-center justify-center gap-[4px] cursor-pointer hover:bg-[#FEE2E2] transition"
+              title="Sign Out"
+            >
+              <LogOut className="w-3 h-3" />
+              <span>Exit</span>
+            </button>
+          </div>
         </div>
       </div>
     </aside>

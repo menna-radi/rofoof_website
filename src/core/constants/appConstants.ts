@@ -12,4 +12,12 @@ export const STORAGE_KEYS = {
   USER_DATA: 'rofoof_user_data',
   THEME_MODE: 'rofoof_theme_mode',
   LANGUAGE: 'rofoof_language',
+  REMEMBER_ME: 'rofoof_remember_me',
+};
+
+/** Demo credentials (mock mode only) */
+export const AUTH_DEMO = {
+  EMAIL: 'admin@rofoof.com',
+  PASSWORD: 'admin123',
+  MOCK_TOKEN: 'mock-jwt-token-rofoof-2026',
 };
