@@ -1,0 +1,42 @@
+export const THEME = {
+  colors: {
+    primary: '#384E85',
+    primaryDark: '#2A3A65',
+    primaryLight: '#EEF1F8',
+    secondary: '#10B981',
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
+    background: '#F4F5F8',
+    surface: '#FFFFFF',
+    textPrimary: '#0F1629',
+    textSecondary: '#7A8299',
+    textMuted: '#9CA3AF',
+    border: 'rgba(56, 78, 133, 0.08)',
+  },
+  typography: {
+    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+    fontSize: {
+      xs: '10px',
+      sm: '12px',
+      base: '13px',
+      lg: '15px',
+      xl: '18px',
+      h1: '22px',
+    },
+  },
+  spacing: {
+    xs: '4px',
+    sm: '8px',
+    md: '16px',
+    lg: '24px',
+    xl: '32px',
+  },
+  borderRadius: {
+    sm: '8px',
+    md: '12px',
+    lg: '16px',
+    xl: '20px',
+    full: '9999px',
+  },
+};

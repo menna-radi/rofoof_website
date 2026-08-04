@@ -54,7 +54,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       children: [
         { id: 'all-orders', label: 'All Orders', href: '/orders' },
         { id: 'active-orders', label: 'Active Orders', href: '/orders?tab=active', badge: '184', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
-        { id: 'pending-orders', label: 'Pending', href: '/orders?tab=pending', badge: '7', badgeClass: 'bg-[#FEF2F2] text-[#EF4444]' },
         { id: 'delivered', label: 'Delivered', href: '/orders?tab=delivered' },
         { id: 'cancelled', label: 'Cancelled', href: '/orders?tab=cancelled' }
       ]
