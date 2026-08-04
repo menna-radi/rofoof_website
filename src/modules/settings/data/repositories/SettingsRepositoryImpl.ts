@@ -7,91 +7,39 @@ import {
   NotificationSettingsEntity,
 } from '../../domain/entities/SettingsEntity';
 import { ENV } from '@/core/api/environment';
-import { apiClient } from '@/core/api/apiClient';
-import { ENDPOINTS } from '@/core/api/endpoints';
 import { settingsLocalDataSource } from '../datasources/SettingsLocalDataSource';
-
-const DEFAULT_SETTINGS: SettingsEntity = {
-  profile: {
-    fullName: 'Admin User',
-    email: 'admin@grocerERP.com',
-    phone: '+20 100 000 0000',
-    role: 'Super Admin',
-    avatarInitials: 'AK',
-  },
-  security: {
-    twoFaEnabled: false,
-    sessionTimeout: 30,
-    lastPasswordChange: '3 months ago',
-  },
-  appearance: {
-    theme: 'light',
-    density: 'comfortable',
-    language: 'en',
-  },
-  notifications: {
-    emailAlerts: true,
-    pushNotifications: true,
-    orderUpdates: true,
-    lowStockAlerts: true,
-    driverAlerts: false,
-  },
-};
+import { settingsRemoteDataSource } from '../datasources/SettingsRemoteDataSource';
+import { SettingsMapper } from '../mappers/SettingsMapper';
 
 export class SettingsRepositoryImpl implements ISettingsRepository {
-  private settings: SettingsEntity = { ...DEFAULT_SETTINGS };
-
-  private loadFromStorage(): void {
-    const theme = settingsLocalDataSource.getTheme();
-    if (theme) {
-      this.settings.appearance.theme = theme as AppearanceSettingsEntity['theme'];
-    }
-  }
-
-  private saveAppearanceToStorage(appearance: AppearanceSettingsEntity): void {
-    settingsLocalDataSource.setTheme(appearance.theme);
-    settingsLocalDataSource.setLanguage(appearance.language);
-  }
-
   async getSettings(): Promise<SettingsEntity> {
-    this.loadFromStorage();
-    if (ENV.USE_MOCK) return Promise.resolve({ ...this.settings });
-    const res = await apiClient.get<SettingsEntity>(ENDPOINTS.SETTINGS.GET);
-    if (res.success) this.settings = res.data;
-    return this.settings;
+    if (ENV.USE_MOCK) return settingsLocalDataSource.getSettings();
+    const dto = await settingsRemoteDataSource.getSettings();
+    return SettingsMapper.toEntity(dto);
   }
 
   async updateProfile(profile: Partial<ProfileSettingsEntity>): Promise<ProfileSettingsEntity> {
-    this.settings.profile = { ...this.settings.profile, ...profile };
-    if (!ENV.USE_MOCK) {
-      await apiClient.put(ENDPOINTS.SETTINGS.UPDATE, { profile: this.settings.profile });
-    }
-    return Promise.resolve(this.settings.profile);
+    if (ENV.USE_MOCK) return settingsLocalDataSource.updateProfile(profile);
+    await settingsRemoteDataSource.updateSettings({ profile: profile as any });
+    return profile as ProfileSettingsEntity;
   }
 
   async updateAppearance(appearance: Partial<AppearanceSettingsEntity>): Promise<AppearanceSettingsEntity> {
-    this.settings.appearance = { ...this.settings.appearance, ...appearance };
-    this.saveAppearanceToStorage(this.settings.appearance);
-    if (!ENV.USE_MOCK) {
-      await apiClient.put(ENDPOINTS.SETTINGS.UPDATE, { appearance: this.settings.appearance });
-    }
-    return Promise.resolve(this.settings.appearance);
+    if (ENV.USE_MOCK) return settingsLocalDataSource.updateAppearance(appearance);
+    await settingsRemoteDataSource.updateSettings({ appearance: appearance as any });
+    return appearance as AppearanceSettingsEntity;
   }
 
   async updateSecurity(security: Partial<SecuritySettingsEntity>): Promise<SecuritySettingsEntity> {
-    this.settings.security = { ...this.settings.security, ...security };
-    if (!ENV.USE_MOCK) {
-      await apiClient.put(ENDPOINTS.SETTINGS.UPDATE, { security: this.settings.security });
-    }
-    return Promise.resolve(this.settings.security);
+    if (ENV.USE_MOCK) return settingsLocalDataSource.updateSecurity(security);
+    await settingsRemoteDataSource.updateSettings({ security: security as any });
+    return security as SecuritySettingsEntity;
   }
 
   async updateNotifications(notifications: Partial<NotificationSettingsEntity>): Promise<NotificationSettingsEntity> {
-    this.settings.notifications = { ...this.settings.notifications, ...notifications };
-    if (!ENV.USE_MOCK) {
-      await apiClient.put(ENDPOINTS.SETTINGS.UPDATE, { notifications: this.settings.notifications });
-    }
-    return Promise.resolve(this.settings.notifications);
+    if (ENV.USE_MOCK) return settingsLocalDataSource.updateNotifications(notifications);
+    await settingsRemoteDataSource.updateSettings({ notifications: notifications as any });
+    return notifications as NotificationSettingsEntity;
   }
 }
 
